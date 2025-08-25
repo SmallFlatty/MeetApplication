@@ -1,11 +1,20 @@
 package com.meetapp.Services;
 
 import com.meetapp.Model.MeetEntity;
+import com.meetapp.Model.UserEntity;
+
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public interface MeetService {
-    MeetEntity getMeet(String meetId);
-    MeetEntity createMeet(MeetEntity meet);
+    List<MeetEntity> getMeetForEachWorker(String fullName);
 
-    void deleteMeet(String id);
+    List<MeetEntity> getAllMeetings();
 
+    MeetEntity createMeet(String title , LocalDateTime startsAt ,  LocalDateTime endsAt , String customerName , String createdBy);
+
+    void deleteMeet(String meetId);
+
+    void changeMeetDate(String id, LocalDateTime startAt , LocalDateTime endAt);
 }

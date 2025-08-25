@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "meetings")
@@ -24,10 +25,10 @@ public class MeetEntity {
     private String title;
 
     @Column(name = "starts_at")
-    private Date start_at;
+    private LocalDateTime start_at;
 
     @Column(name = "end_at")
-    private Date end_at;
+    private LocalDateTime end_at;
 
     @Column(name = "customer_name")
     private String customer_name;
@@ -36,7 +37,7 @@ public class MeetEntity {
     private String created_by;
 
     @Column(name = "created_at")
-    private Date created_at;
+    private LocalDateTime created_at;
 
 
 }
