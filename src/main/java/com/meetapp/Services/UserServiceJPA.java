@@ -53,7 +53,7 @@ public class UserServiceJPA implements UserService {
 
     @Override
     public void deleteUser(String userId) {
-
+        userRepository.deleteById(userId);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class UserServiceJPA implements UserService {
     }
 
     @Override
-    public String getUserId(String fullName) {
-        return  null;
+    public long getUserId(String fullName) {
+        return  userRepository.getUserId(fullName);
     }
 }

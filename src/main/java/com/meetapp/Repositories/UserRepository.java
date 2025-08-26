@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -18,4 +19,6 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     @Query(value = "SELECT role FROM users WHERE id = :userId", nativeQuery = true)
     String getRole(@Param("userId") long userId);
 
+    @Query(value = "SELECT id FROM users WHERE full_name = :fullName", nativeQuery = true)
+    long getUserId(@Param("fullName") String fullName);
 }

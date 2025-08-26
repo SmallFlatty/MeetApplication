@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 
 @Entity
 @Table(name = "users")
@@ -33,5 +35,8 @@ public class UserEntity {
 
     @Column(name = "is_active")
     private Boolean isActive;
+
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
+    private List<MeetEntity> meetEntities;
 
 }

@@ -29,8 +29,8 @@ public class MeetServiceJPA implements MeetService {
 
 
     @Override
-    public List<MeetEntity> getMeetForEachWorker(String fullName) {
-        return meetRepository.getAllMeetsForEachWorker(fullName);
+    public List<MeetEntity> getMeetForEachWorker(long userId) {
+        return meetRepository.getAllMeetsForEachWorker(userId);
     }
 
     @Override
@@ -39,12 +39,15 @@ public class MeetServiceJPA implements MeetService {
     }
 
     @Override
-    public void deleteMeet(String meetId) {
-
+    public void deleteMeet(Long meetId) {
+        meetRepository.deleteById(meetId);
     }
 
     @Override
-    public void changeMeetDate(String id, LocalDateTime startAt, LocalDateTime endAt) {
-
+    public void changeMeetDate(Long meetId, LocalDateTime startAt, LocalDateTime endAt) {
+        if(endAt.isBefore(startAt)) {
+            throw new IllegalArgumentException("End time cannot be before start time");
+        }
+        meetRepository.changeMeetDate(meetId, startAt, endAt);
     }
 }

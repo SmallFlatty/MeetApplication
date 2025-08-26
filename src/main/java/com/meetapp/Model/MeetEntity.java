@@ -39,5 +39,8 @@ public class MeetEntity {
     @Column(name = "created_at")
     private LocalDateTime created_at;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
 }

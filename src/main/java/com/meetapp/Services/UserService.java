@@ -13,5 +13,5 @@ public interface UserService {
 
     String getRole(long userId);
 
-    String getUserId(String fullName);
+    long getUserId(String fullName);
 }

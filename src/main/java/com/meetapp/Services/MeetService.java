@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MeetService {
-    List<MeetEntity> getMeetForEachWorker(String fullName);
+    List<MeetEntity> getMeetForEachWorker(long userId);
 
     List<MeetEntity> getAllMeetings();
 
     MeetEntity createMeet(String title , LocalDateTime startsAt ,  LocalDateTime endsAt , String customerName , String createdBy);
 
-    void deleteMeet(String meetId);
+    void deleteMeet(Long meetId);
 
-    void changeMeetDate(String id, LocalDateTime startAt , LocalDateTime endAt);
+    void changeMeetDate(Long meetId, LocalDateTime startAt , LocalDateTime endAt);
 }
