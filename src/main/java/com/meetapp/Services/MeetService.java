@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MeetService {
-    List<MeetEntity> getMeetForEachWorker(long userId);
+    List<MeetEntity> getMeetsForPerson(long userId);
 
     List<MeetEntity> getAllMeetings();
 
-    MeetEntity createMeet(String title , LocalDateTime startsAt ,  LocalDateTime endsAt , String customerName , String createdBy);
+    MeetEntity createMeet(String title , LocalDateTime startsAt ,  LocalDateTime endsAt , String customerName , String createdBy , long userId);
 
     void deleteMeet(Long meetId);
 

@@ -33,12 +33,12 @@ public class UserServiceJPA implements UserService {
     }
 
     @Override
-    public UserEntity updateActiveUser(String fullName, boolean active) {
-        return null;
-    }
-
-    @Override
     public boolean checkUser(String password, String fullName) {
+
+        if(password == null || fullName == null){
+            throw new IllegalArgumentException("Password or Full Name is invalid");
+        }
+
         String hashedPassword = null;
 
         try{
@@ -52,7 +52,7 @@ public class UserServiceJPA implements UserService {
     }
 
     @Override
-    public void deleteUser(String userId) {
+    public void deleteUser(long userId) {
         userRepository.deleteById(userId);
     }
 

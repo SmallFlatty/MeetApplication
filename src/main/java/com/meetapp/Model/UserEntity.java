@@ -33,9 +33,6 @@ public class UserEntity {
     @Column(name = "role")
     private String role;
 
-    @Column(name = "is_active")
-    private Boolean isActive;
-
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
     private List<MeetEntity> meetEntities;
 

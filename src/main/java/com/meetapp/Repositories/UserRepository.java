@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, String> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END " +
             "FROM UserEntity u WHERE u.password = :password AND u.fullName = :fullName")
     boolean checkUser(@Param("password") String password,
@@ -21,4 +21,6 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
 
     @Query(value = "SELECT id FROM users WHERE full_name = :fullName", nativeQuery = true)
     long getUserId(@Param("fullName") String fullName);
+
+
 }

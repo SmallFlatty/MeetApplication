@@ -1,7 +1,9 @@
 package com.meetapp.Services;
 
 import com.meetapp.Model.MeetEntity;
+import com.meetapp.Model.UserEntity;
 import com.meetapp.Repositories.MeetRepository;
+import com.meetapp.Repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -10,27 +12,33 @@ import java.util.List;
 @Service
 public class MeetServiceJPA implements MeetService {
     private final MeetRepository meetRepository;
+    private final UserRepository userRepository;
 
-    public MeetServiceJPA(MeetRepository meetRepository) {
+    public MeetServiceJPA(MeetRepository meetRepository, UserRepository userRepository) {
         this.meetRepository = meetRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public MeetEntity createMeet(String title, LocalDateTime startsAt, LocalDateTime endsAt, String customerName, String createdBy) {
+    public MeetEntity createMeet(String title, LocalDateTime startsAt, LocalDateTime endsAt, String customerName, String createdBy,long userId) {
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         MeetEntity meetEntity = new MeetEntity();
         meetEntity.setTitle(title);
         meetEntity.setStart_at(startsAt);
         meetEntity.setEnd_at(endsAt);
         meetEntity.setCustomer_name(customerName);
         meetEntity.setCreated_by(createdBy);
+        meetEntity.setUser(user);
 
         return  meetRepository.save(meetEntity);
     }
 
-
     @Override
-    public List<MeetEntity> getMeetForEachWorker(long userId) {
-        return meetRepository.getAllMeetsForEachWorker(userId);
+    public List<MeetEntity> getMeetsForPerson(long userId) {
+        return meetRepository.findAllByUser_Id(userId);
     }
 
     @Override

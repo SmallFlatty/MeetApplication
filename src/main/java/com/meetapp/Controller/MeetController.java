@@ -4,6 +4,7 @@ import com.meetapp.Model.MeetEntity;
 import com.meetapp.Services.MeetService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -17,22 +18,36 @@ public class MeetController {
         this.meetService = meetService;
     }
 
-    @PostMapping("/meetings")
+    @PostMapping("/meetings/create")
     public MeetEntity createMeet(@RequestBody MeetEntity meetEntity) {
-        return meetService.createMeet(meetEntity.getTitle(),
-                                      meetEntity.getStart_at(),
-                                      meetEntity.getEnd_at(),
-                                      meetEntity.getCustomer_name(),
-                                      meetEntity.getCreated_by());
+        return meetService.createMeet(
+                meetEntity.getTitle(),
+                meetEntity.getStart_at(),
+                meetEntity.getEnd_at(),
+                meetEntity.getCustomer_name(),
+                meetEntity.getCreated_by(),
+                meetEntity.getUser().getId()
+        );
     }
 
-    @GetMapping("/meetings")
+
+    @GetMapping("/meetings/all-meets")
     public List<MeetEntity> getAllMeets() {
         return meetService.getAllMeetings();
     }
 
-//    @GetMapping("/meetings/{fullName}")
-//    public List<MeetEntity> getMeetsByFullName(@PathVariable String fullName) {
-//        return meetService.getMeetForEachWorker(fullName);
-//    } Змінив дб на One to Many , зробити щоб тут можна було брати все по Id
+    @GetMapping("/meetings/{userId}")
+    public List<MeetEntity> getMeetsForPerson(@PathVariable long userId) {
+        return meetService.getMeetsForPerson(userId);
+    }
+
+    @DeleteMapping("/meetings/delete-meet")
+    public void deleteMeet(@RequestBody Long meetId) {
+        meetService.deleteMeet(meetId);
+    }
+
+    @PutMapping("/meetings/")
+    public void changeMeetDate(@RequestParam Long meetId, @RequestParam LocalDateTime startAt , @RequestParam LocalDateTime endAt ) {
+        meetService.changeMeetDate(meetId, startAt, endAt);
+    }
 }

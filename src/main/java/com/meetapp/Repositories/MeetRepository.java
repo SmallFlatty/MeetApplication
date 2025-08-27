@@ -16,8 +16,7 @@ public interface MeetRepository extends JpaRepository<MeetEntity, Long> {
     @Query(value = "SELECT * FROM meetings m WHERE m.start_at > NOW()", nativeQuery = true)
     List<MeetEntity> getAllMeets();
 
-    @Query(value = "SELECT * FROM meetings WHERE created_by = :fullName", nativeQuery = true)
-    List<MeetEntity> getAllMeetsForEachWorker(@Param("userId") long userId);
+    List<MeetEntity> findAllByUser_Id(Long userId);
 
     @Modifying
     @Transactional
@@ -26,4 +25,5 @@ public interface MeetRepository extends JpaRepository<MeetEntity, Long> {
                         @Param("startsAt") LocalDateTime startsAt,
                         @Param("endAt") LocalDateTime endAt
     );
+
 }
