@@ -2,7 +2,6 @@ package com.meetapp.Controller;
 
 import com.meetapp.Model.UserEntity;
 import com.meetapp.Services.UserService;
-import org.apache.catalina.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

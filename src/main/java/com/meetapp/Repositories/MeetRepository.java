@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface MeetRepository extends JpaRepository<MeetEntity, Long> {
-    @Query(value = "SELECT * FROM meetings m WHERE m.start_at > NOW()", nativeQuery = true)
+    @Query("SELECT m FROM MeetEntity m WHERE m.start_at > CURRENT_TIMESTAMP")
     List<MeetEntity> getAllMeets();
 
     List<MeetEntity> findAllByUser_Id(Long userId);

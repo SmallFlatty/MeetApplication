@@ -1,9 +1,6 @@
 package com.meetapp.Services;
 
 import com.meetapp.Model.MeetEntity;
-import com.meetapp.Model.UserEntity;
-
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
 
