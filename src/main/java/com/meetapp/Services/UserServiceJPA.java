@@ -65,4 +65,11 @@ public class UserServiceJPA implements UserService {
     public long getUserId(String fullName) {
         return  userRepository.getUserId(fullName);
     }
+
+    @Override
+    public String getFullName(long userId) {
+        return userRepository.getFullName(userId);
+    }
+
+
 }

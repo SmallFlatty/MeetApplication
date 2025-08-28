@@ -26,4 +26,5 @@ public interface MeetRepository extends JpaRepository<MeetEntity, Long> {
                         @Param("endAt") LocalDateTime endAt
     );
 
+
 }

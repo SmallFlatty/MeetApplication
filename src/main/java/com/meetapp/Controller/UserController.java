@@ -43,4 +43,9 @@ public class UserController  {
     public long getUserId(@RequestParam String fullName) {
         return userService.getUserId(fullName);
     }
+
+    @GetMapping("/get-name")
+    public String getName(@RequestParam long userId) {
+        return userService.getFullName(userId);
+    }
 }

@@ -20,5 +20,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query(value = "SELECT id FROM users WHERE full_name = :fullName", nativeQuery = true)
     long getUserId(@Param("fullName") String fullName);
 
+    @Query("SELECT u.fullName FROM UserEntity u WHERE u.id = :userId")
+    String getFullName(@Param("userId") long userId);
+
 
 }
