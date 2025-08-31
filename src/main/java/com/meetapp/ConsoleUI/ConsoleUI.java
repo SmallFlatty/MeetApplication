@@ -26,57 +26,65 @@ public class ConsoleUI {
             String choice = scanner.nextLine();
             switch (choice){
                 case "Register":
-                    while (true){
                         System.out.println("Enter your full name:");
-                        String fullName = scanner.nextLine();
+                        String fullNameR = scanner.nextLine();
 
                         System.out.println("Enter your password:");
-                        String password = scanner.nextLine();
+                        String passwordR = scanner.nextLine();
 
                         System.out.println("Enter your password confirmation:");
                         String passwordConfirmation = scanner.nextLine();
 
-                            if(password.equals(passwordConfirmation)){
-                                System.out.println("Enter your email:");
-                                String email = scanner.nextLine();
-
-                                System.out.println("Enter your role: ADMIN or WORKER");
-                                String role = scanner.nextLine();
-
-                                if(!role.equals("ADMIN") && !role.equals("WORKER")){
-                                    System.out.println("Invalid role");
-                                }else{
-                                    userService.createUser(email, password, fullName, role);
-                                    long userId = userService.getUserId(fullName);
-                                    MainMenu menu = new MainMenu(userService, meetService);
-                                    menu.Menu(role,userId);
-                                }
-                            }else{
-                                continue;
-                            }
-                        }
-                case "SignUp":
-                    while (true) {
-                        // write a method to check existing users full name in Data Base , add 3 tries to sign up
-                        System.out.println("Enter your full name:");
-                        String fullName = scanner.nextLine();
-
-                        System.out.println("Enter your password:");
-                        String password = scanner.nextLine();
-
-                        boolean Confirmation = userService.checkUser(password, fullName);
-
-                        if(Confirmation){
-                            long userID = userService.getUserId(fullName);
-                            String role = userService.getRole(userID);
-
-                            MainMenu mainMenu = new MainMenu(userService,meetService);
-                            mainMenu.Menu(role,userID);
-                        }else{
+                        if(!passwordR.equals(passwordConfirmation)){
+                            System.out.println("Passwords do not match");
                             break;
                         }
 
+                        System.out.println("Enter your email:");
+                        String email = scanner.nextLine();
+
+                        System.out.println("Enter your role: ADMIN or WORKER");
+                        String role = scanner.nextLine();
+
+                        if(!role.equals("ADMIN") && !role.equals("WORKER")) {
+                            System.out.println("Invalid role");
+                            break;
+                        }
+
+                        userService.createUser(email, passwordR, fullNameR, role);
+                        long userId = userService.getUserId(fullNameR);
+
+                        MainMenu menu = new MainMenu(userService, meetService);
+                        menu.Menu(role,userId);
+
+                        return;
+                case "SignUp":
+                    int countTries = 1;
+                    while (countTries < 4) {
+                        System.out.println("Enter your full name:");
+                        String fullNameS = scanner.nextLine();
+
+                        System.out.println("Enter your password:");
+                        String passwordS = scanner.nextLine();
+
+                        boolean confirmation = userService.checkUser(passwordS, fullNameS);
+
+                        if (confirmation) {
+                            long userID = userService.getUserId(fullNameS);
+                            String roleS = userService.getRole(userID);
+
+                            MainMenu mainMenu = new MainMenu(userService, meetService);
+                            mainMenu.Menu(roleS, userID);
+                            break;
+                        }
+                        System.out.println("Invalid password or full name , tries "+countTries+"/3");
+                        countTries++;
                     }
+                    if(countTries == 4)
+                        System.out.println("Too many attempts , try again later");
+
+                    break;
+
                 default:
                     System.out.println("Invalid choice");
                     continue;

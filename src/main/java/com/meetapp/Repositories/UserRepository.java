@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
@@ -23,5 +25,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query("SELECT u.fullName FROM UserEntity u WHERE u.id = :userId")
     String getFullName(@Param("userId") long userId);
 
+    @Query("SELECT u.id , u.fullName FROM UserEntity u")
+    List<Object []> getAllUsers();
+
+    @Query("SELECT u.id FROM UserEntity u WHERE u.role = 'ADMIN'")
+    long getAdminId();
 
 }

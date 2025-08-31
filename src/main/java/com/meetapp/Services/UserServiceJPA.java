@@ -1,15 +1,20 @@
 package com.meetapp.Services;
 
 import com.meetapp.Model.UserEntity;
+import com.meetapp.Repositories.MeetRepository;
 import com.meetapp.Repositories.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserServiceJPA implements UserService {
     private final UserRepository userRepository;
+    private final MeetRepository meetRepository;
 
-    public UserServiceJPA(UserRepository userRepository){
+    public UserServiceJPA(UserRepository userRepository, MeetRepository meetRepository){
         this.userRepository = userRepository;
+        this.meetRepository = meetRepository;
     }
 
 
@@ -69,6 +74,16 @@ public class UserServiceJPA implements UserService {
     @Override
     public String getFullName(long userId) {
         return userRepository.getFullName(userId);
+    }
+
+    @Override
+    public List<Object[]> getAllUsers() {
+        return userRepository.getAllUsers();
+    }
+
+    @Override
+    public long getAdminId() {
+        return userRepository.getAdminId();
     }
 
 

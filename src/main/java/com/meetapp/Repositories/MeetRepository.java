@@ -26,5 +26,11 @@ public interface MeetRepository extends JpaRepository<MeetEntity, Long> {
                         @Param("endAt") LocalDateTime endAt
     );
 
+    @Query("SELECT m FROM MeetEntity m WHERE m.user.id <> :userId")
+    List<MeetEntity> getAllWorkersMeets(@Param("userId")long userId);
+
+    @Query("SELECT CASE WHEN (m.user.role = 'ADMIN') THEN true ELSE false END " +
+            "FROM MeetEntity m WHERE m.id = :meetingId")
+    boolean isMeetingCreatedByAdmin(@Param("meetingId") long meetingId);
 
 }

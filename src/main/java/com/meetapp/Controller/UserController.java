@@ -4,6 +4,8 @@ import com.meetapp.Model.UserEntity;
 import com.meetapp.Services.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserController  {
@@ -47,5 +49,15 @@ public class UserController  {
     @GetMapping("/get-name")
     public String getName(@RequestParam long userId) {
         return userService.getFullName(userId);
+    }
+
+    @GetMapping("/get-users")
+    public List<Object[]> getUsers() {
+        return userService.getAllUsers();
+    }
+
+    @GetMapping("/get-admin-role")
+    public long getAdminRole() {
+        return userService.getAdminId();
     }
 }

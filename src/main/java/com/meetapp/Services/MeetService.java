@@ -9,9 +9,13 @@ public interface MeetService {
 
     List<MeetEntity> getAllMeetings();
 
+    List<MeetEntity> getAllWorkersMeets(long userId);
+
     MeetEntity createMeet(String title , LocalDateTime startsAt ,  LocalDateTime endsAt , String customerName , String createdBy , long userId);
 
     void deleteMeet(Long meetId);
 
     void changeMeetDate(Long meetId, LocalDateTime startAt , LocalDateTime endAt);
+
+    boolean meetsCreatedByAdmin(long meetId);
 }

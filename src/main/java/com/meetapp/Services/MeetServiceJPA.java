@@ -47,6 +47,11 @@ public class MeetServiceJPA implements MeetService {
     }
 
     @Override
+    public List<MeetEntity> getAllWorkersMeets(long userId) {
+        return meetRepository.getAllWorkersMeets(userId);
+    }
+
+    @Override
     public void deleteMeet(Long meetId) {
         meetRepository.deleteById(meetId);
     }
@@ -57,5 +62,10 @@ public class MeetServiceJPA implements MeetService {
             throw new IllegalArgumentException("End time cannot be before start time");
         }
         meetRepository.changeMeetDate(meetId, startAt, endAt);
+    }
+
+    @Override
+    public boolean meetsCreatedByAdmin(long meetId) {
+        return meetRepository.isMeetingCreatedByAdmin(meetId);
     }
 }

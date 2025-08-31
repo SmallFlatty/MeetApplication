@@ -50,4 +50,14 @@ public class MeetController {
     public void changeMeetDate(@RequestParam Long meetId, @RequestParam LocalDateTime startAt , @RequestParam LocalDateTime endAt ) {
         meetService.changeMeetDate(meetId, startAt, endAt);
     }
+
+    @GetMapping("/get-workers-meets")
+    public List<MeetEntity> getAllWorkersMeets(long userId) {
+        return meetService.getAllWorkersMeets(userId);
+    }
+
+    @GetMapping("/meet-created-admin")
+    public boolean meetsCreatedByAdmin(long meetId) {
+        return meetService.meetsCreatedByAdmin(meetId);
+    }
 }
