@@ -27,10 +27,10 @@ public class MeetServiceJPA implements MeetService {
 
         MeetEntity meetEntity = new MeetEntity();
         meetEntity.setTitle(title);
-        meetEntity.setStart_at(startsAt);
-        meetEntity.setEnd_at(endsAt);
-        meetEntity.setCustomer_name(customerName);
-        meetEntity.setCreated_by(createdBy);
+        meetEntity.setStartAt(startsAt);
+        meetEntity.setEndAt(endsAt);
+        meetEntity.setCustomerName(customerName);
+        meetEntity.setCreatedBy(createdBy);
         meetEntity.setUser(user);
 
         return  meetRepository.save(meetEntity);

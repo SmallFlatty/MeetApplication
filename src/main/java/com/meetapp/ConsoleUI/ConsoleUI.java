@@ -24,8 +24,10 @@ public class ConsoleUI {
             System.out.println("Register - for registration , SignUp - for sign up");
             System.out.println("Enter your choice:");
             String choice = scanner.nextLine();
+            choice = choice.toLowerCase();
+            System.out.println(choice);
             switch (choice){
-                case "Register":
+                case "register":
                         System.out.println("Enter your full name:");
                         String fullNameR = scanner.nextLine();
 
@@ -58,7 +60,7 @@ public class ConsoleUI {
                         menu.Menu(role,userId);
 
                         return;
-                case "SignUp":
+                case "signup":
                     int countTries = 1;
                     while (countTries < 4) {
                         System.out.println("Enter your full name:");

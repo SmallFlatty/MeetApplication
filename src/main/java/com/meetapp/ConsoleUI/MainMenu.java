@@ -51,14 +51,15 @@ public class MainMenu {
                                             indexMy++,
                                             m.getId(),
                                             m.getTitle(),
-                                            m.getStart_at(),
-                                            m.getEnd_at(),
-                                            m.getCustomer_name(),
-                                            m.getCreated_by());
+                                            m.getStartAt(),
+                                            m.getEndAt(),
+                                            m.getCustomerName(),
+                                            m.getCreatedBy());
                                 }
 
                                 System.out.println("Write the meet id which you want to delete");
                                 long myMeetId = scanner.nextLong();
+                                scanner.nextLine();
 
                                 boolean isCreatedByAdmin = meetService.meetsCreatedByAdmin(myMeetId);
 
@@ -74,9 +75,7 @@ public class MainMenu {
                                 System.out.println("LogOut - log out from your account ");
                                 String CommandLine3 =  scanner.nextLine();
                                 if(CommandLine3.equalsIgnoreCase("logout")){
-
-                                    ConsoleUI consoleUI = new ConsoleUI(userService, meetService);
-                                    consoleUI.start();
+                                    return;
                                 }else if(CommandLine3.equalsIgnoreCase("back")){
                                     break;
                                 }
@@ -125,9 +124,7 @@ public class MainMenu {
                                 System.out.println("LogOut - log out from your account ");
                                 String CommandLine4 =  scanner.nextLine();
                                 if(CommandLine4.equalsIgnoreCase("logout")){
-
-                                    ConsoleUI consoleUI = new ConsoleUI(userService, meetService);
-                                    consoleUI.start();
+                                    return;
                                 }else if(CommandLine4.equalsIgnoreCase("back")){
                                     break;
                                 }
@@ -149,10 +146,10 @@ public class MainMenu {
                                     System.out.printf("%-4d | %-20s | %-16s | %-16s | %-20s | %-15s%n",
                                             indexMyAdmin++,
                                             m.getTitle(),
-                                            m.getStart_at(),
-                                            m.getEnd_at(),
-                                            m.getCustomer_name(),
-                                            m.getCreated_by());
+                                            m.getStartAt(),
+                                            m.getEndAt(),
+                                            m.getCustomerName(),
+                                            m.getCreatedBy());
                                 }
                                 System.out.println("Back - back to main menu");
                                 System.out.println("LogOut - log out from your account ");
@@ -160,8 +157,7 @@ public class MainMenu {
                                 String CommandLine7 =  scanner.nextLine();
 
                                 if(CommandLine7.equalsIgnoreCase("logout")){
-                                    ConsoleUI consoleUI = new ConsoleUI(userService, meetService);
-                                    consoleUI.start();
+                                    return;
                                 }else if(CommandLine7.equalsIgnoreCase("back")){
                                     break;
                                 }
@@ -193,6 +189,7 @@ public class MainMenu {
 
                                 System.out.println("Write a workers id which you want to delete");
                                 long workerId = scanner.nextLong();
+                                scanner.nextLine();
 
                                 userService.deleteUser(workerId);
                                 System.out.println("Your user successfully deleted.");
@@ -201,9 +198,7 @@ public class MainMenu {
                                 System.out.println("LogOut - log out from your account ");
                                 String CommandLine1 =  scanner.nextLine();
                                 if(CommandLine1.equalsIgnoreCase("logout")){
-
-                                    ConsoleUI consoleUI = new ConsoleUI(userService, meetService);
-                                    consoleUI.start();
+                                    return;
                                 }else if(CommandLine1.equalsIgnoreCase("back")){
                                     break;
                                 }
@@ -213,7 +208,7 @@ public class MainMenu {
 
                                 if (allAdminMeetings.isEmpty()) {
                                     System.out.println("❌ No meetings found.");
-                                    return;
+                                    break;
                                 }
 
                                 System.out.printf("%-4s | %-4s | %-20s | %-16s | %-16s | %-20s | %-15s%n",
@@ -226,14 +221,15 @@ public class MainMenu {
                                             indexPer++,
                                             m.getId(),
                                             m.getTitle(),
-                                            m.getStart_at(),
-                                            m.getEnd_at(),
-                                            m.getCustomer_name(),
-                                            m.getCreated_by());
+                                            m.getStartAt(),
+                                            m.getEndAt(),
+                                            m.getCustomerName(),
+                                            m.getCreatedBy());
                                 }
 
                                 System.out.println("Write the meet id which you want to delete");
                                 long perMeetId = scanner.nextLong();
+                                scanner.nextLine();
 
                                 meetService.deleteMeet(perMeetId);
                                 System.out.println("Your meet successfully deleted.");
@@ -242,9 +238,7 @@ public class MainMenu {
                                 System.out.println("LogOut - log out from your account ");
                                 String CommandLine2 =  scanner.nextLine();
                                 if(CommandLine2.equalsIgnoreCase("logout")){
-
-                                    ConsoleUI consoleUI = new ConsoleUI(userService, meetService);
-                                    consoleUI.start();
+                                    return;
                                 }else if(CommandLine2.equalsIgnoreCase("back")){
                                     break;
                                 }
@@ -267,14 +261,15 @@ public class MainMenu {
                                             indexMy++,
                                             m.getId(),
                                             m.getTitle(),
-                                            m.getStart_at(),
-                                            m.getEnd_at(),
-                                            m.getCustomer_name(),
-                                            m.getCreated_by());
+                                            m.getStartAt(),
+                                            m.getEndAt(),
+                                            m.getCustomerName(),
+                                            m.getCreatedBy());
                                 }
 
                                 System.out.println("Write the meet id which you want to delete");
                                 long myMeetId = scanner.nextLong();
+                                scanner.nextLine();
 
                                 meetService.deleteMeet(myMeetId);
                                 System.out.println("Your meet successfully deleted.");
@@ -283,9 +278,7 @@ public class MainMenu {
                                 System.out.println("LogOut - log out from your account ");
                                 String CommandLine3 =  scanner.nextLine();
                                 if(CommandLine3.equalsIgnoreCase("logout")){
-
-                                    ConsoleUI consoleUI = new ConsoleUI(userService, meetService);
-                                    consoleUI.start();
+                                    return;
                                 }else if(CommandLine3.equalsIgnoreCase("back")){
                                     break;
                                 }
@@ -335,9 +328,7 @@ public class MainMenu {
                                 System.out.println("LogOut - log out from your account ");
                                 String CommandLine4 =  scanner.nextLine();
                                 if(CommandLine4.equalsIgnoreCase("logout")){
-
-                                    ConsoleUI consoleUI = new ConsoleUI(userService, meetService);
-                                    consoleUI.start();
+                                    return;
                                 }else if(CommandLine4.equalsIgnoreCase("back")){
                                     break;
                                 }
@@ -397,8 +388,7 @@ public class MainMenu {
                                 System.out.println("LogOut - log out from your account ");
                                 String CommandLine5 =  scanner.nextLine();
                                 if(CommandLine5.equalsIgnoreCase("logout")){
-                                    ConsoleUI consoleUI = new ConsoleUI(userService, meetService);
-                                    consoleUI.start();
+                                    return;
                                 }else if(CommandLine5.equalsIgnoreCase("back")){
                                     break;
                                 }
@@ -422,19 +412,17 @@ public class MainMenu {
                                     System.out.printf("%-4d | %-20s | %-16s | %-16s | %-20s | %-15s%n",
                                             indexWork++,
                                             m.getTitle(),
-                                            m.getStart_at(),
-                                            m.getEnd_at(),
-                                            m.getCustomer_name(),
-                                            m.getCreated_by());
+                                            m.getStartAt(),
+                                            m.getEndAt(),
+                                            m.getCustomerName(),
+                                            m.getCreatedBy());
                                 }
 
                                 System.out.println("Back - back to main menu");
                                 System.out.println("LogOut - log out from your account ");
                                 String CommandLine6 =  scanner.nextLine();
                                 if(CommandLine6.equalsIgnoreCase("logout")){
-
-                                    ConsoleUI consoleUI = new ConsoleUI(userService, meetService);
-                                    consoleUI.start();
+                                    return;
                                 }else if(CommandLine6.equalsIgnoreCase("back")){
                                     break;
                                 }
@@ -456,10 +444,10 @@ public class MainMenu {
                                     System.out.printf("%-4d | %-20s | %-16s | %-16s | %-20s | %-15s%n",
                                             indexMyAdmin++,
                                             m.getTitle(),
-                                            m.getStart_at(),
-                                            m.getEnd_at(),
-                                            m.getCustomer_name(),
-                                            m.getCreated_by());
+                                            m.getStartAt(),
+                                            m.getEndAt(),
+                                            m.getCustomerName(),
+                                            m.getCreatedBy());
                                 }
                                 System.out.println("Back - back to main menu");
                                 System.out.println("LogOut - log out from your account ");
@@ -467,11 +455,11 @@ public class MainMenu {
                                 String CommandLine7 =  scanner.nextLine();
 
                                 if(CommandLine7.equalsIgnoreCase("logout")){
-                                    ConsoleUI consoleUI = new ConsoleUI(userService, meetService);
-                                    consoleUI.start();
+                                    return;
                                 }else if(CommandLine7.equalsIgnoreCase("back")){
                                     break;
                                 }
+
                         }
                     }
             }

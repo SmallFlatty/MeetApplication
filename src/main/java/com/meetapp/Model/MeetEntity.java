@@ -24,19 +24,19 @@ public class MeetEntity {
     private String title;
 
     @Column(name = "starts_at")
-    private LocalDateTime start_at;
+    private LocalDateTime startAt;
 
     @Column(name = "end_at")
-    private LocalDateTime end_at;
+    private LocalDateTime endAt;
 
     @Column(name = "customer_name")
-    private String customer_name;
+    private String customerName;
 
     @Column(name = "created_by")
-    private String created_by;
+    private String createdBy;
 
     @Column(name = "created_at")
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

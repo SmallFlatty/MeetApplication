@@ -24,6 +24,6 @@ public class Main implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         ConsoleUI ui = applicationContext.getBean(ConsoleUI.class);
-
+        ui.start();
     }
 }

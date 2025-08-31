@@ -22,10 +22,10 @@ public class MeetController {
     public MeetEntity createMeet(@RequestBody MeetEntity meetEntity) {
         return meetService.createMeet(
                 meetEntity.getTitle(),
-                meetEntity.getStart_at(),
-                meetEntity.getEnd_at(),
-                meetEntity.getCustomer_name(),
-                meetEntity.getCreated_by(),
+                meetEntity.getStartAt(),
+                meetEntity.getEndAt(),
+                meetEntity.getCustomerName(),
+                meetEntity.getCreatedBy(),
                 meetEntity.getUser().getId()
         );
     }
