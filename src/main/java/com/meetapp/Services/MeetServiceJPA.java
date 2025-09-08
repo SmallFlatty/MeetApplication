@@ -20,7 +20,7 @@ public class MeetServiceJPA implements MeetService {
     }
 
     @Override
-    public MeetEntity createMeet(String title, LocalDateTime startsAt, LocalDateTime endsAt, String customerName, String createdBy,long userId) {
+    public MeetEntity createMeet(String title, LocalDateTime startsAt, LocalDateTime endsAt, String customerName, String createdBy,LocalDateTime createdAt,long userId) {
 
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -31,6 +31,7 @@ public class MeetServiceJPA implements MeetService {
         meetEntity.setEndAt(endsAt);
         meetEntity.setCustomerName(customerName);
         meetEntity.setCreatedBy(createdBy);
+        meetEntity.setCreatedAt(createdAt);
         meetEntity.setUser(user);
 
         return  meetRepository.save(meetEntity);

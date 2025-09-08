@@ -25,7 +25,6 @@ public class ConsoleUI {
             System.out.println("Enter your choice:");
             String choice = scanner.nextLine();
             choice = choice.toLowerCase();
-            System.out.println(choice);
             switch (choice){
                 case "register":
                         System.out.println("Enter your full name:");

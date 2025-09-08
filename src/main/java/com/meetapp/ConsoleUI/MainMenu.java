@@ -116,7 +116,7 @@ public class MainMenu {
                                 System.out.println("Write a customer name ");
                                 String customerName = scanner.nextLine();
 
-                                meetService.createMeet(title,startsAt,endsAt,customerName,username,userId);
+                                meetService.createMeet(title,startsAt,endsAt,customerName,username,LocalDateTime.now(),userId);
 
                                 System.out.println("Your meet successfully created.");
 
@@ -232,7 +232,7 @@ public class MainMenu {
                                 scanner.nextLine();
 
                                 meetService.deleteMeet(perMeetId);
-                                System.out.println("Your meet successfully deleted.");
+                                System.out.println("Workers meet successfully deleted.");
 
                                 System.out.println("Back - back to main menu");
                                 System.out.println("LogOut - log out from your account ");
@@ -320,7 +320,7 @@ public class MainMenu {
                                 System.out.println("Write a customer name ");
                                 String customerName = scanner.nextLine();
 
-                                meetService.createMeet(title,startsAt,endsAt,customerName,username,userId);
+                                meetService.createMeet(title,startsAt,endsAt,customerName,username,LocalDateTime.now(),userId);
 
                                 System.out.println("Your meet successfully created.");
 
@@ -381,7 +381,7 @@ public class MainMenu {
                                 long idForUser = Long.parseLong(scanner.nextLine());
 
 
-                                meetService.createMeet(titleForPerson,startsAtForPerson,endsAtForPerson,customerNameForPerson,username,idForUser);
+                                meetService.createMeet(titleForPerson,startsAtForPerson,endsAtForPerson,customerNameForPerson,username,LocalDateTime.now(),idForUser);
                                 System.out.println("Your meet successfully created.");
 
                                 System.out.println("Back - back to main menu");

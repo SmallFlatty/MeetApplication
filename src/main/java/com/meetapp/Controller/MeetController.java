@@ -26,6 +26,7 @@ public class MeetController {
                 meetEntity.getEndAt(),
                 meetEntity.getCustomerName(),
                 meetEntity.getCreatedBy(),
+                meetEntity.getCreatedAt(),
                 meetEntity.getUser().getId()
         );
     }

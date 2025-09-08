@@ -11,7 +11,7 @@ public interface MeetService {
 
     List<MeetEntity> getAllWorkersMeets(long userId);
 
-    MeetEntity createMeet(String title , LocalDateTime startsAt ,  LocalDateTime endsAt , String customerName , String createdBy , long userId);
+    MeetEntity createMeet(String title , LocalDateTime startsAt ,  LocalDateTime endsAt , String customerName , String createdBy ,LocalDateTime createdAt, long userId);
 
     void deleteMeet(Long meetId);
 
