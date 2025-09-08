@@ -69,4 +69,16 @@ public class MeetServiceJPA implements MeetService {
     public boolean meetsCreatedByAdmin(long meetId) {
         return meetRepository.isMeetingCreatedByAdmin(meetId);
     }
+
+    @Override
+    public List<Long> getAllMeetsId() {
+        return meetRepository.getAllMeetsIds();
+    }
+
+    @Override
+    public List<Long> getIdMeetsForWorker(long userId) {
+        return meetRepository.getAllMeetsIdsForWorker(userId);//ДОДАТИ ДЛЯ ПЕРЕВ
+    }
+
+
 }

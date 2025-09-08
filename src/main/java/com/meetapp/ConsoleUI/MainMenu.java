@@ -66,10 +66,16 @@ public class MainMenu {
                                 if(isCreatedByAdmin){
                                     System.out.println("You cant delete your meet which was created by admin");
                                     break;
-                                }else{
-                                    meetService.deleteMeet(myMeetId);
-                                    System.out.println("Your meet successfully deleted.");
                                 }
+                                try{
+                                    meetService.deleteMeet(myMeetId);
+                                }catch (Exception e){
+                                    System.out.println(e.getMessage());
+                                    break;
+                                }
+
+                                System.out.println("Your meet successfully deleted.");
+
 
                                 System.out.println("Back - back to main menu");
                                 System.out.println("LogOut - log out from your account ");

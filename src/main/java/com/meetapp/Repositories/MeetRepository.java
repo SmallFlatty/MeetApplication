@@ -33,4 +33,9 @@ public interface MeetRepository extends JpaRepository<MeetEntity, Long> {
             "FROM MeetEntity m WHERE m.id = :meetingId")
     boolean isMeetingCreatedByAdmin(@Param("meetingId") long meetingId);
 
+    @Query("SELECT u.id FROM MeetEntity u")
+    List<Long> getAllMeetsIds();
+
+    @Query("SELECT u.id FROM MeetEntity u WHERE u.user.id <> :userId")
+    List<Long> getAllMeetsIdsForWorker(@Param("userId")  long userId);
 }

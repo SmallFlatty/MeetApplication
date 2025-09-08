@@ -18,4 +18,8 @@ public interface MeetService {
     void changeMeetDate(Long meetId, LocalDateTime startAt , LocalDateTime endAt);
 
     boolean meetsCreatedByAdmin(long meetId);
+
+    List<Long> getAllMeetsId();
+
+    List<Long> getIdMeetsForWorker(long userId);
 }
