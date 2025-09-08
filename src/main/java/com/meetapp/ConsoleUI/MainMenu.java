@@ -69,13 +69,11 @@ public class MainMenu {
                                 }
                                 try{
                                     meetService.deleteMeet(myMeetId);
+                                    System.out.println("Your meet successfully deleted.");
                                 }catch (Exception e){
-                                    System.out.println(e.getMessage());
+                                    System.out.println("This Id Does Not Exist");
                                     break;
                                 }
-
-                                System.out.println("Your meet successfully deleted.");
-
 
                                 System.out.println("Back - back to main menu");
                                 System.out.println("LogOut - log out from your account ");
@@ -236,9 +234,14 @@ public class MainMenu {
                                 System.out.println("Write the meet id which you want to delete");
                                 long perMeetId = scanner.nextLong();
                                 scanner.nextLine();
+                                try {
+                                    meetService.deleteMeet(perMeetId);
+                                    System.out.println("Workers meet successfully deleted.");
+                                }catch(Exception e){
+                                    System.out.println("This Id Does Not Exist");
+                                    break;
+                                }
 
-                                meetService.deleteMeet(perMeetId);
-                                System.out.println("Workers meet successfully deleted.");
 
                                 System.out.println("Back - back to main menu");
                                 System.out.println("LogOut - log out from your account ");
@@ -276,9 +279,13 @@ public class MainMenu {
                                 System.out.println("Write the meet id which you want to delete");
                                 long myMeetId = scanner.nextLong();
                                 scanner.nextLine();
-
-                                meetService.deleteMeet(myMeetId);
-                                System.out.println("Your meet successfully deleted.");
+                                try {
+                                    meetService.deleteMeet(myMeetId);
+                                    System.out.println("Your meet successfully deleted.");
+                                }catch(Exception e){
+                                    System.out.println("This Id Does Not Exist");
+                                    break;
+                                }
 
                                 System.out.println("Back - back to main menu");
                                 System.out.println("LogOut - log out from your account ");
