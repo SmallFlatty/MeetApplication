@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MainMenu from './Components/MainMenu.vue'
+import MainMenuView from './Components/Views/MainPage/MainMenuView.vue'
 const user = {
   id: 2,
   name: 'Ros Tik',
@@ -11,5 +11,5 @@ function handleLogout() {
 </script>
 
 <template>
-  <MainMenu :user="user" @logout="handleLogout" />
+  <MainMenuView :user="user" @logout="handleLogout" />
 </template>

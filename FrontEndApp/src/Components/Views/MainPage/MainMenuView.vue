@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-
+import MainLogo from '@/Assets/MainLogo.png'
 type Role = 'ADMIN' | 'WORKER'
 interface UserInfo { id: number; name: string; role: Role }
 
@@ -68,13 +68,41 @@ const actions = computed(() => {
     { key:'my-meetings', label:'My Meetings', desc:'View and manage your meetings', to:{ name:'meetings.mine' }, icon:'📅' },
     { key:'create-meeting', label:'Create Meeting', desc:'Schedule a new meeting', to:{ name:'meetings.create' }, icon:'➕' },
   ]
+
+  // для WORKER
+  if (user.value?.role === 'WORKER') {
+    base.push({
+      key:'create-meeting-worker',
+      label:'Create Meet for Worker',
+      desc:'Submit a request for a meeting',
+      to:{ name:'meetings.worker' },
+      icon:'👨‍💻'
+    })
+  }
+
+  // для ADMIN
   if (user.value?.role === 'ADMIN') {
     return [
       ...base,
       { key:'all-meetings', label:'All Meetings', desc:`Browse every user's meetings`, to:{ name:'meetings.all' }, icon:'🗂️' },
       { key:'users', label:'Users', desc:'Manage users and roles', to:{ name:'users.index' }, icon:'👥' },
+      {
+        key:'register-person',
+        label:'Register new person',
+        desc:'Add a new user to the system',
+        to:{ name:'users.register' },
+        icon:'🆕'
+      },
+      {
+        key:'create-meeting-for-worker',
+        label:'Create Meet for a Worker',
+        desc:'Schedule a meeting on behalf of a worker',
+        to:{ name:'meetings.createForWorker' },   // новий роут
+        icon:'🛠️'
+      }
     ]
   }
+
   return base
 })
 
@@ -84,11 +112,22 @@ function go(to:any){ if (to?.name) router.push(to) }
 <template>
   <div class="page">
     <header class="header">
+      <!-- LEFT: user card -->
       <div class="title-wrap">
-        <p class="subtitle" v-if="user">
-          Welcome, <strong>{{ user.name }}</strong> ·
-          <span class="role" :class="user.role.toLowerCase()">{{ user.role }}</span>
-        </p>
+        <div v-if="user" class="user-card">
+          <div class="user-card__icon">👋</div>
+          <div class="user-card__meta">
+            <div class="user-card__line">
+              Welcome, <strong>{{ user.name }}</strong>
+            </div>
+            <span class="role" :class="user.role.toLowerCase()">{{ user.role }}</span>
+          </div>
+        </div>
+        <p v-else class="subtitle">Welcome, Guest</p>
+      </div>
+
+      <div class="logo-bar">
+        <img :src="MainLogo" alt="RPS Meet logo" class="logo-img" />
       </div>
 
       <div class="header-actions">
@@ -99,6 +138,8 @@ function go(to:any){ if (to?.name) router.push(to) }
         <button v-if="!user && !showLogin" class="btn" @click="showLogin = true">Sign In</button>
       </div>
     </header>
+
+
 
     <!-- Login panel -->
     <div v-if="!user && showLogin" class="login">
@@ -154,17 +195,18 @@ function go(to:any){ if (to?.name) router.push(to) }
 }
 
 /* Шапка */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+.header{
+  position: relative;           /* нове */
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px;
+  min-height: 96px;             /* щоб хедер не “стрибав” по висоті */
 }
 .title {
   margin: 0;
   font-size: 28px;
   letter-spacing: 0.2px;
 }
+.title-wrap{ display:flex; align-items:center; gap:12px; }
 .subtitle {
   margin: 0;
   color: var(--muted);
@@ -255,8 +297,8 @@ function go(to:any){ if (to?.name) router.push(to) }
 .card {
   background: var(--panel);
   border: 1px solid #342a57;
-  border-radius: 18px;
-  padding: 18px;
+  border-radius: 22px;
+  padding: 24px;
   display: grid;
   grid-template-rows: auto auto 1fr auto;
   gap: 6px;
@@ -268,18 +310,38 @@ function go(to:any){ if (to?.name) router.push(to) }
   border-color: var(--violet-2);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35), 0 0 0 3px var(--ring);
 }
+.user-card{
+  display:inline-flex; align-items:center; gap:12px;
+  padding:10px 14px; border-radius:14px;
+  background: linear-gradient(180deg, #231b3f, #1c1632);
+  border:1px solid #3c2f5e;
+  box-shadow: 0 6px 18px rgba(0,0,0,.25), 0 0 0 3px var(--ring);
+}
+.user-card__icon{
+  width:36px; height:36px; border-radius:10px;
+  display:grid; place-items:center; font-size:20px; line-height:1;
+  background: linear-gradient(135deg, var(--violet-1), var(--violet-2));
+  box-shadow: 0 6px 16px rgba(160,100,255,.35);
+}
+.user-card__meta{ display:flex; align-items:center; gap:10px; }
+.user-card__line{ color:var(--text); font-weight:600; }
+.role{
+  padding:3px 10px; border-radius:999px; font-size:12px; font-weight:800; color:white;
+  background:linear-gradient(135deg, var(--violet-1), var(--violet-2));
+  box-shadow:0 0 0 2px rgba(160,100,255,.20) inset;
+}
 .icon {
-  font-size: 28px;
+  font-size: 40px;
+  line-height: 1;
 }
 .card-title {
-  margin: 2px 0;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 800;
+  margin: 6px 0 2px;
 }
 .card-desc {
-  margin: 0;
+  font-size: 15px;
   color: var(--muted);
-  font-size: 13px;
 }
 .cta {
   margin-top: 8px;
@@ -289,18 +351,6 @@ function go(to:any){ if (to?.name) router.push(to) }
   font-weight: 800;
   padding: 8px 12px;
   border-radius: 10px;
-}
-
-/* Поради */
-.secondary {
-  margin-top: 8px;
-  opacity: 0.92;
-}
-.tips {
-  background: linear-gradient(180deg, #2a2243, #201733);
-  border: 1px dashed #4a3970;
-  border-radius: 16px;
-  padding: 14px;
 }
 .tips h3 {
   margin: 0 0 8px 0;
@@ -346,6 +396,25 @@ input:-webkit-autofill:focus {
   transition: none !important;
 }
 
+.logo-bar{
+  position:absolute;            /* нове */
+  left:50%; top:50%;
+  transform: translate(-50%, -50%);
+  display:flex; align-items:center; justify-content:center;
+  pointer-events:none;          /* щоб не перекривало клікабельні елементи */
+  z-index:0;                    /* під кнопками/юзером, якщо треба */
+}
+
+/* Лого 2× (було 54px) */
+.logo-img{
+  height:108px;                 /* 2 рази більше */
+  max-width: 70vw;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 22px rgba(160,100,255,.28));
+  user-select:none; pointer-events:none;
+}
+
+.page { position: relative; }
 
 
 </style>
