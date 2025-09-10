@@ -1,7 +1,6 @@
 package com.meetapp;
 
 import com.meetapp.ConsoleUI.ConsoleUI;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,7 +21,7 @@ public class Main implements CommandLineRunner {
 
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         ConsoleUI ui = applicationContext.getBean(ConsoleUI.class);
         ui.start();
     }

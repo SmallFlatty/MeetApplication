@@ -1,11 +1,15 @@
-<script setup></script>
+<script setup lang="ts">
+import MainMenu from './Components/MainMenu.vue'
+const user = {
+  id: 2,
+  name: 'Ros Tik',
+  role: 'ADMIN'
+}
+function handleLogout() {
+  console.log('Logout clicked!')
+}
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <MainMenu :user="user" @logout="handleLogout" />
 </template>
-
-<style scoped></style>

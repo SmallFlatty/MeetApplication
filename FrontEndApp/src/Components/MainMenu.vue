@@ -1,0 +1,352 @@
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+
+type Role = 'ADMIN' | 'WORKER'
+interface UserInfo { id: number; name: string; role: Role }
+
+const router = useRouter()
+const API = 'http://localhost:8080/api/user'
+
+const user = ref<UserInfo | null>(null)
+const showLogin = ref(false)
+const fullName = ref('')
+const password = ref('')
+const loginError = ref<string | null>(null)
+
+async function signIn() {
+  loginError.value = null
+
+  try {
+    // 1) validation
+    const vRes = await fetch(`${API}/validation?` + new URLSearchParams({
+      fullName: fullName.value,
+      password: password.value
+    }), { method: 'GET' })
+    const vText = (await vRes.text()).trim().toLowerCase()
+    const isOk = vText === 'true'
+    if (!isOk) {
+      loginError.value = 'Invalid name or password'
+      return
+    }
+
+    // 2) userId by fullName
+    const idRes = await fetch(`${API}/get-id?` + new URLSearchParams({
+      fullName: fullName.value
+    }), { method: 'GET' })
+    const idText = (await idRes.text()).trim()
+    const userId = Number(idText)
+    if (!Number.isFinite(userId)) {
+      loginError.value = 'Cannot read user id'
+      return
+    }
+
+    // 3) role by userId
+    const roleRes = await fetch(`${API}/role?` + new URLSearchParams({
+      userId: String(userId)
+    }), { method: 'GET' })
+    const roleText = (await roleRes.text()).trim().toUpperCase()
+    const role = (roleText === 'ADMIN' ? 'ADMIN' : 'WORKER') as Role
+
+    // 4) set user
+    user.value = { id: userId, name: fullName.value, role }
+    showLogin.value = false
+    fullName.value = ''
+    password.value = ''
+  } catch (err) {
+    loginError.value = 'Login failed. Check API/CORS/network.'
+  }
+}
+
+function logout() {
+  user.value = null
+  showLogin.value = true
+}
+
+const actions = computed(() => {
+  const base = [
+    { key:'my-meetings', label:'My Meetings', desc:'View and manage your meetings', to:{ name:'meetings.mine' }, icon:'📅' },
+    { key:'create-meeting', label:'Create Meeting', desc:'Schedule a new meeting', to:{ name:'meetings.create' }, icon:'➕' },
+  ]
+  if (user.value?.role === 'ADMIN') {
+    return [
+      ...base,
+      { key:'all-meetings', label:'All Meetings', desc:`Browse every user's meetings`, to:{ name:'meetings.all' }, icon:'🗂️' },
+      { key:'users', label:'Users', desc:'Manage users and roles', to:{ name:'users.index' }, icon:'👥' },
+    ]
+  }
+  return base
+})
+
+function go(to:any){ if (to?.name) router.push(to) }
+</script>
+
+<template>
+  <div class="page">
+    <header class="header">
+      <div class="title-wrap">
+        <p class="subtitle" v-if="user">
+          Welcome, <strong>{{ user.name }}</strong> ·
+          <span class="role" :class="user.role.toLowerCase()">{{ user.role }}</span>
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <button v-if="user" class="btn ghost" @click="router.push({ name: 'report' })">Report Problem</button>
+        <button v-if="user" class="btn ghost" @click="router.push({ name: 'support' })">Tech Support</button>
+        <button v-if="user" class="btn ghost" @click="router.push({ name: 'profile' })">Profile</button>
+        <button v-if="user" class="btn danger" @click="logout">Logout</button>
+        <button v-if="!user && !showLogin" class="btn" @click="showLogin = true">Sign In</button>
+      </div>
+    </header>
+
+    <!-- Login panel -->
+    <div v-if="!user && showLogin" class="login">
+      <input v-model="fullName" placeholder="Full name" autocomplete="username" />
+      <input v-model="password" type="password" placeholder="Password" autocomplete="current-password" />
+      <button class="btn" @click="signIn">Sign In</button>
+      <p v-if="loginError" class="error">{{ loginError }}</p>
+    </div>
+
+    <!-- Role-aware actions -->
+    <section v-if="user" class="grid">
+      <article v-for="item in actions" :key="item.key" class="card" @click="go(item.to)">
+        <div class="icon">{{ item.icon }}</div>
+        <h2 class="card-title">{{ item.label }}</h2>
+        <p class="card-desc">{{ item.desc }}</p>
+        <div class="cta">Open</div>
+      </article>
+    </section>
+
+  </div>
+</template>
+
+<style>
+:root {
+  --bg-1: #0e0b18;
+  --bg-2: #1a1430;
+  --panel: #241d3e;
+  --text: #f4f0ff;
+  --muted: #c1b6e6;
+
+  --violet-1: #bba1ff;
+  --violet-2: #9f7fff;
+  --violet-3: #7a4fe0;
+
+  --danger-1: #ff738f;
+  --danger-2: #ff466d;
+
+  --ring: rgba(160, 100, 255, 0.35);
+}
+
+/* Фон сторінки */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 28px;
+  color: var(--text);
+  background:
+      radial-gradient(1000px 600px at -10% -10%, #2d234f 0%, transparent 60%),
+      radial-gradient(1000px 800px at 120% 20%, #1c1335 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg-2), var(--bg-1));
+}
+
+/* Шапка */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.title {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: 0.2px;
+}
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+}
+
+.role {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, var(--violet-1), var(--violet-2));
+  box-shadow: 0 0 0 2px rgba(160, 100, 255, 0.2) inset;
+}
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Кнопки */
+.btn {
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--violet-1), var(--violet-2));
+  box-shadow: 0 4px 16px rgba(160, 100, 255, 0.3);
+  transition: all 0.2s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--violet-1);
+  border: 1px solid #44356b;
+}
+.btn.danger {
+  background: linear-gradient(135deg, var(--danger-1), var(--danger-2));
+  box-shadow: 0 6px 18px rgba(255, 70, 109, 0.3);
+}
+
+/* Логін */
+.login {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+.login input {
+  height: 42px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background-color: #1d1738; /* 🔄 Однотонне, без градієнта */
+  color: var(--text);
+  border: none;
+  outline: none;
+  box-shadow: none;
+  transition: background 0.3s ease;
+}
+.login input:focus {
+  background-color: #231b3f;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.login input::placeholder {
+  color: #cfc8ea88;
+}
+.error {
+  color: #ff9b9b;
+  font-weight: 700;
+  grid-column: 1 / -1;
+}
+
+/* Сітка */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid #342a57;
+  border-radius: 18px;
+  padding: 18px;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--violet-2);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35), 0 0 0 3px var(--ring);
+}
+.icon {
+  font-size: 28px;
+}
+.card-title {
+  margin: 2px 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+.card-desc {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.cta {
+  margin-top: 8px;
+  align-self: start;
+  background: linear-gradient(135deg, var(--violet-1), var(--violet-2));
+  color: #fff;
+  font-weight: 800;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+/* Поради */
+.secondary {
+  margin-top: 8px;
+  opacity: 0.92;
+}
+.tips {
+  background: linear-gradient(180deg, #2a2243, #201733);
+  border: 1px dashed #4a3970;
+  border-radius: 16px;
+  padding: 14px;
+}
+.tips h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #d8cffb;
+}
+.tips ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #b7aedf;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .login {
+    grid-template-columns: 1fr;
+  }
+  .btn-primary {
+    width: 100%;
+  }
+}
+body, html, .page {
+  background-color: #0e0b18 !important;
+  background-image: none !important;
+}
+
+input,
+input:focus,
+input:focus-visible,
+input:focus-within,
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  all: unset;
+  appearance: none;
+  background-color: #1d1738 !important;
+  color: var(--text) !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 12px !important;
+  padding: 10px 14px;
+  font: inherit;
+  transition: none !important;
+}
+
+
+
+</style>
+

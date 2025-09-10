@@ -2,8 +2,6 @@ package com.meetapp.ConsoleUI;
 
 import com.meetapp.Services.MeetService;
 import com.meetapp.Services.UserService;
-import org.hibernate.annotations.Comment;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
