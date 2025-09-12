@@ -21,4 +21,10 @@ public interface UserService {
     List<Object[]> getAllUsers();
 
     long getAdminId();
+
+    UserEntity getUser(String fullName , String password);
+
+    UserEntity getUserById(long userId);
+
+    UserEntity getAllUserInformation();
 }

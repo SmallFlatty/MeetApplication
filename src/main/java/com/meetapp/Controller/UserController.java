@@ -2,8 +2,14 @@ package com.meetapp.Controller;
 
 import com.meetapp.Model.UserEntity;
 import com.meetapp.Services.UserService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.apache.commons.io.FilenameUtils;
 
+
+import java.io.File;
 import java.util.List;
 
 @RestController
@@ -60,4 +66,74 @@ public class UserController  {
     public long getAdminRole() {
         return userService.getAdminId();
     }
+
+    @GetMapping("all-info")
+    public UserEntity getAllUserInformation() {
+       return userService.getAllUserInformation();
+    }
+
+    @PostMapping("/upload-avatar")
+    public ResponseEntity<?> uploadUserAvatar(@RequestParam("file") MultipartFile file, @RequestParam String fullName) {
+        try {
+            String ext = FilenameUtils.getExtension(file.getOriginalFilename());
+            String folderPath = new File("UsersAvatar").getAbsolutePath();
+            String avatarPath = folderPath + File.separator + fullName + "." + ext;
+
+            File oldFile = new File(avatarPath);
+            if (oldFile.exists()) {
+                oldFile.delete();
+            }
+
+            file.transferTo(new File(avatarPath));
+            return ResponseEntity.ok("upload successfully");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return ResponseEntity.status(500).body("Upload failed " + ex.getMessage());
+        }
+    }
+
+    // Save user with reload page
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestParam String fullName, @RequestParam String password, HttpSession session) {
+        UserEntity user = userService.getUser(fullName,password);
+
+        if (user == null) {
+            return ResponseEntity.status(401).body("Invalid credentials");
+        }
+        session.setAttribute("userId", user.getId());
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/checkme")
+    public ResponseEntity<?> checkMe(HttpSession session) {
+        Object userIdAttr = session.getAttribute("userId");
+
+        if (userIdAttr == null) {
+            return ResponseEntity.status(401).body("Not logged in");
+        }
+
+        Long userId;
+        try {
+            userId = Long.valueOf(userIdAttr.toString());
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(400).body("Invalid session user ID");
+        }
+
+        UserEntity user = userService.getUserById(userId);
+
+        if (user == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
+        return ResponseEntity.ok(user);
+    }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpSession session) {
+        session.removeAttribute("userId");
+        return ResponseEntity.ok("logged out");
+    }
+    //
+
 }

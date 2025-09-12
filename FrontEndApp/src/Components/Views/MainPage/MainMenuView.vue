@@ -2,66 +2,87 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import MainLogo from '@/Assets/MainLogo.png'
+import {onMounted} from "vue";
+
+
 type Role = 'ADMIN' | 'WORKER'
 interface UserInfo { id: number; name: string; role: Role }
 
 const router = useRouter()
 const API = 'http://localhost:8080/api/user'
-
 const user = ref<UserInfo | null>(null)
 const showLogin = ref(false)
 const fullName = ref('')
 const password = ref('')
 const loginError = ref<string | null>(null)
 
+
+onMounted(() => {
+  checkSession()
+})
+
 async function signIn() {
   loginError.value = null
 
   try {
-    // 1) validation
-    const vRes = await fetch(`${API}/validation?` + new URLSearchParams({
-      fullName: fullName.value,
-      password: password.value
-    }), { method: 'GET' })
-    const vText = (await vRes.text()).trim().toLowerCase()
-    const isOk = vText === 'true'
-    if (!isOk) {
+    // 1) Надсилаємо POST-запит на /login для створення сесії
+    const loginRes = await fetch(`${API}/login`, {
+      method: 'POST',
+      credentials: 'include', // важливо для cookie-сесії
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        fullName: fullName.value,
+        password: password.value
+      })
+    })
+
+    if (!loginRes.ok) {
       loginError.value = 'Invalid name or password'
       return
     }
 
-    // 2) userId by fullName
-    const idRes = await fetch(`${API}/get-id?` + new URLSearchParams({
-      fullName: fullName.value
-    }), { method: 'GET' })
-    const idText = (await idRes.text()).trim()
-    const userId = Number(idText)
-    if (!Number.isFinite(userId)) {
-      loginError.value = 'Cannot read user id'
-      return
+    const data = await loginRes.json()
+    const role = (data.role === 'ADMIN' ? 'ADMIN' : 'WORKER') as Role
+
+    user.value = {
+      id: data.id,
+      name: data.fullName,
+      role: role
     }
 
-    // 3) role by userId
-    const roleRes = await fetch(`${API}/role?` + new URLSearchParams({
-      userId: String(userId)
-    }), { method: 'GET' })
-    const roleText = (await roleRes.text()).trim().toUpperCase()
-    const role = (roleText === 'ADMIN' ? 'ADMIN' : 'WORKER') as Role
-
-    // 4) set user
-    user.value = { id: userId, name: fullName.value, role }
     showLogin.value = false
     fullName.value = ''
     password.value = ''
   } catch (err) {
+    console.error(err)
     loginError.value = 'Login failed. Check API/CORS/network.'
   }
 }
 
-function logout() {
-  user.value = null
-  showLogin.value = true
-}
+  async function logout() {
+    await fetch(`${API}/logout`, {
+      method: 'POST',
+      credentials: 'include'
+    })
+    user.value = null
+    showLogin.value = true
+  }
+
+  async function checkSession() {
+    try {
+      const res = await fetch(`${API}/checkme`, { credentials: 'include' })
+      if (!res.ok) return
+
+      const data = await res.json()
+      user.value = {
+        id: data.id,
+        name: data.fullName,
+        role: data.role
+      }
+    } catch (err) {
+      console.warn('Session check failed')
+    }
+  }
 
 const actions = computed(() => {
   const base = [
@@ -97,7 +118,7 @@ const actions = computed(() => {
         key:'create-meeting-for-worker',
         label:'Create Meet for a Worker',
         desc:'Schedule a meeting on behalf of a worker',
-        to:{ name:'meetings.createForWorker' },   // новий роут
+        to:{ name:'meetings.createForWorker' },
         icon:'🛠️'
       }
     ]

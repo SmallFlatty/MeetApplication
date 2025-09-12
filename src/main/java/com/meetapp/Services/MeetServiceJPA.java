@@ -77,7 +77,7 @@ public class MeetServiceJPA implements MeetService {
 
     @Override
     public List<Long> getIdMeetsForWorker(long userId) {
-        return meetRepository.getAllMeetsIdsForWorker(userId);//ДОДАТИ ДЛЯ ПЕРЕВ
+        return meetRepository.getAllMeetsIdsForWorker(userId);
     }
 
 

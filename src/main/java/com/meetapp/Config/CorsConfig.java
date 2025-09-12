@@ -1,4 +1,4 @@
-package com.meetapp.CorsConfig;
+package com.meetapp.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -3,6 +3,8 @@ package com.meetapp.Services;
 import com.meetapp.Model.UserEntity;
 import com.meetapp.Repositories.MeetRepository;
 import com.meetapp.Repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,11 +12,13 @@ import java.util.List;
 @Service
 public class UserServiceJPA implements UserService {
     private final UserRepository userRepository;
-    private final MeetRepository meetRepository;
 
-    public UserServiceJPA(UserRepository userRepository, MeetRepository meetRepository){
+    private final PasswordEncoder passwordEncoder;
+
+
+    public UserServiceJPA(UserRepository userRepository, PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
-        this.meetRepository = meetRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -22,15 +26,9 @@ public class UserServiceJPA implements UserService {
     public UserEntity createUser(String email, String password, String fullName, String role) {
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail(email);
+        String encodedPassword = passwordEncoder.encode(password);
+        userEntity.setPassword(encodedPassword);
 
-        String hashedPassword = null;
-        try {
-            hashedPassword = HashPassword.hashPassword(password);
-        } catch (Exception e) {
-            System.out.println("Hash Password Error" + e.getMessage());
-        }
-
-        userEntity.setPassword(hashedPassword);
         userEntity.setFullName(fullName);
         userEntity.setRole(role);
 
@@ -43,16 +41,7 @@ public class UserServiceJPA implements UserService {
         if(password == null || fullName == null){
             throw new IllegalArgumentException("Password or Full Name is invalid");
         }
-
-        String hashedPassword = null;
-
-        try{
-            hashedPassword = HashPassword.hashPassword(password);
-        }catch(Exception e){
-            System.out.println("Hash Password Error" + e.getMessage());
-        }
-
-
+        String hashedPassword = passwordEncoder.encode(password);;
         return userRepository.checkUser(hashedPassword, fullName);
     }
 
@@ -84,6 +73,29 @@ public class UserServiceJPA implements UserService {
     @Override
     public long getAdminId() {
         return userRepository.getAdminId();
+    }
+
+    @Override
+    public UserEntity getUser(String fullName, String password) {
+        UserEntity user = userRepository.getUser(fullName);
+
+        if(user == null){
+            return null;
+        }
+
+        boolean check = passwordEncoder.matches(password, user.getPassword());
+
+        return check ? user : null;
+    }
+
+    @Override
+    public UserEntity getUserById(long userId) {
+        return userRepository.getUserById(userId);
+    }
+
+    @Override
+    public UserEntity getAllUserInformation() {
+        return userRepository.AllUserInformation();
     }
 
 
