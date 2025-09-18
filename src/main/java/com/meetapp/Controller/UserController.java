@@ -68,8 +68,8 @@ public class UserController  {
     }
 
     @GetMapping("all-info")
-    public UserEntity getAllUserInformation() {
-       return userService.getAllUserInformation();
+    public UserEntity getAllUserInformation(@RequestParam String fullName) {
+       return userService.getAllUserInformation(fullName);
     }
 
     @PostMapping("/upload-avatar")

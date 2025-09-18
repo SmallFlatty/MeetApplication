@@ -26,5 +26,5 @@ public interface UserService {
 
     UserEntity getUserById(long userId);
 
-    UserEntity getAllUserInformation();
+    UserEntity getAllUserInformation(String fullName);
 }

@@ -154,7 +154,11 @@ function go(to:any){ if (to?.name) router.push(to) }
       <div class="header-actions">
         <button v-if="user" class="btn ghost" @click="router.push({ name: 'report' })">Report Problem</button>
         <button v-if="user" class="btn ghost" @click="router.push({ name: 'support' })">Tech Support</button>
-        <button v-if="user" class="btn ghost" @click="router.push({ name: 'profile' })">Profile</button>
+        <button
+            v-if="user"
+            class="btn ghost"
+            @click="router.push({ name: 'profile', query: {fullName: user.name } })">Profile
+        </button>
         <button v-if="user" class="btn danger" @click="logout">Logout</button>
         <button v-if="!user && !showLogin" class="btn" @click="showLogin = true">Sign In</button>
       </div>

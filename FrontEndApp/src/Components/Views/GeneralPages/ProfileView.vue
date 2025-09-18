@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import {useRoute, useRouter} from 'vue-router'
 
-const router = useRouter() // 🟢 Додали це!
+const router = useRouter()
+const route = useRoute()
 
 const API = 'http://localhost:8080/api/user'
 const user = ref(null)
@@ -10,7 +11,11 @@ const avatarUrl = ref('')
 const selectedFile = ref<File | null>(null)
 
 onMounted(() => {
-  fetch(`${API}/all-info`, {
+  const fullName = route.query.fullName as string
+
+  if (fullName == null) return;
+
+  fetch(`${API}/all-info?fullName=${fullName}`, {
     credentials: 'include'
   })
       .then(res => res.json())
@@ -155,6 +160,9 @@ async function uploadAvatar() {
 
 .custom-file-upload input[type="file"] {
   display: none;
+}
+hr{
+  border: none;
 }
 
 </style>

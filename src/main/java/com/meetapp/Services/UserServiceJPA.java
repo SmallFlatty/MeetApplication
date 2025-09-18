@@ -94,8 +94,8 @@ public class UserServiceJPA implements UserService {
     }
 
     @Override
-    public UserEntity getAllUserInformation() {
-        return userRepository.AllUserInformation();
+    public UserEntity getAllUserInformation(String fullName) {
+        return userRepository.AllUserInformation(fullName);
     }
 
 
