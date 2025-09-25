@@ -106,7 +106,7 @@ const actions = computed(() => {
     return [
       ...base,
       { key:'all-meetings', label:'All Meetings', desc:`Browse every user's meetings`, to:{ name:'meetings.all' }, icon:'🗂️' },
-      { key:'users', label:'Users', desc:'Manage users and roles', to:{ name:'users.index' }, icon:'👥' },
+      { key:'users', label:'Users', desc:'Manage users and roles', to:{ name:'users' }, icon:'👥' },
       {
         key:'register-person',
         label:'Register new person',

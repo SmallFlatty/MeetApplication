@@ -36,8 +36,4 @@ public class Main implements CommandLineRunner {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public JavaMailSender mailSender(){
-        return new JavaMailSenderImpl();
-    }
 }
