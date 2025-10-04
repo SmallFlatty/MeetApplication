@@ -37,3 +37,36 @@ Repository: https://github.com/SmallFlatty/MeetApplication
 ```bash
 git clone https://github.com/SmallFlatty/MeetApplication.git
 cd MeetApplication
+
+### Backend (development)
+mvn spring-boot:run
+
+### Frontend (development)
+cd frontend
+npm install
+npm run serve
+
+### Minimal env example (backend)
+
+# Server
+server.port=8080
+spring.profiles.active=local
+
+# Database (MySQL)
+spring.datasource.url=jdbc:mysql://localhost:3306/meeting_app
+spring.datasource.username=your_db_name
+spring.datasource.password=your_db_password
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# JPA / Hibernate
+spring.jpa.hibernate.ddl-auto=none
+spring.jpa.show-sql=true
+
+# Mail (Gmail SMTP)
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=your_mail
+spring.mail.password=your_mail_password
+spring.mail.protocol=smtp
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
