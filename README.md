@@ -47,7 +47,7 @@ npm install
 npm run serve
 
 ### Minimal env example (backend)
-
+```bash
 # Server
 server.port=8080
 spring.profiles.active=local
