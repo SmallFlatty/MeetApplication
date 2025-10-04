@@ -34,7 +34,7 @@ Repository: https://github.com/SmallFlatty/MeetApplication
 - Git
 
 ### Clone repository
-```bash
+
 git clone https://github.com/SmallFlatty/MeetApplication.git
 cd MeetApplication
 
