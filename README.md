@@ -2,7 +2,7 @@
 
 Repository: https://github.com/SmallFlatty/MeetApplication
 
-**Meet Application (RPs Meets)** — a small pet project for creating and managing meetings (online/offline), simple room booking and role-based access.
+**Meet Application (RPs Meets)** - a small pet project for creating and managing meetings (online/offline), simple room booking and role-based access.
 
 ---
 
