@@ -34,20 +34,22 @@ Repository: https://github.com/SmallFlatty/MeetApplication
 - Git
 
 ### Clone repository
-
+```
 git clone https://github.com/SmallFlatty/MeetApplication.git
 cd MeetApplication
-
+```
 ### Backend (development)
-mvn spring-boot:run
+```mvn spring-boot:run```
 
 ### Frontend (development)
+```
 cd frontend
 npm install
-npm run serve
+npm run dev
+```
 
 ### Minimal env example (backend)
-```bash
+```
 # Server
 server.port=8080
 spring.profiles.active=local
