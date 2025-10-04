@@ -38,15 +38,6 @@ Repository: https://github.com/SmallFlatty/MeetApplication
 git clone https://github.com/SmallFlatty/MeetApplication.git
 cd MeetApplication
 ```
-### Backend (development)
-```mvn spring-boot:run```
-
-### Frontend (development)
-```
-cd frontend
-npm install
-npm run dev
-```
 
 ### Minimal env example (backend)
 ```
@@ -72,3 +63,16 @@ spring.mail.password=your_mail_password
 spring.mail.protocol=smtp
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
+```
+
+### Backend (development)
+```mvn spring-boot:run```
+
+### Frontend (development)
+```
+cd frontend
+npm install
+npm run dev
+```
+
+
