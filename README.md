@@ -28,9 +28,9 @@ Repository: https://github.com/SmallFlatty/MeetApplication
 
 ### Prerequisites
 - Java 17+ (JDK)  
-- Maven (or use included `./mvnw`)  
-- Node.js 16+ and npm (or yarn)  
-- MySQL server (or H2 for quick dev)  
+- Maven 
+- Node.js 16+ and npm 
+- MySQL server 
 - Git
 
 ### Clone repository
