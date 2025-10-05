@@ -1,9 +1,7 @@
 package com.meetapp.Services;
 
 import com.meetapp.Model.UserEntity;
-import com.meetapp.Repositories.MeetRepository;
 import com.meetapp.Repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +12,13 @@ public class UserServiceJPA implements UserService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+//    private final UserService userService;
 
 
     public UserServiceJPA(UserRepository userRepository, PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+//        this.userService = userService;
     }
 
 
@@ -96,6 +96,11 @@ public class UserServiceJPA implements UserService {
     @Override
     public UserEntity getAllUserInformation(String fullName) {
         return userRepository.AllUserInformation(fullName);
+    }
+
+    @Override
+    public boolean emailExists(String email) {
+        return userRepository.getUserByEmail(email);
     }
 
 
