@@ -3,6 +3,8 @@ package com.meetapp.Controller;
 import com.meetapp.Model.UserEntity;
 import com.meetapp.Services.UserService;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,14 +24,30 @@ public class UserController  {
         this.userService = userService;
     }
 
+
+
+//    @PostMapping("/create-user")
+//    public ResponseEntity<?> createUser(@RequestBody UserEntity user) {
+////        return userService.createUser(
+////                user.getEmail(),
+////                user.getPassword(),
+////                user.getFullName(),
+////                user.getRole()
+////        );
+//        user
+//    }
     @PostMapping("/create-user")
-    public UserEntity createUser(@RequestBody UserEntity user) {
-        return userService.createUser(
-                user.getEmail(),
-                user.getPassword(),
-                user.getFullName(),
-                user.getRole()
-        );
+    public ResponseEntity<?> createUser(@RequestParam String email, @RequestParam String password, @RequestParam String fullName, @RequestParam String role){
+        if (fullName.isEmpty() || password.isEmpty() || email.isEmpty() || role.isEmpty()) {
+
+            return ResponseEntity.badRequest().body("Missing required fields");
+        }
+//        else if(userService.)
+        if (userService.emailExists(email)){
+            return ResponseEntity.badRequest().body("Email already exists");
+        }
+        userService.createUser(email, password, fullName, role);
+        return ResponseEntity.ok("User created");
     }
 
     @GetMapping("/validation")
@@ -94,8 +112,8 @@ public class UserController  {
 
     // Save user with reload page
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String fullName, @RequestParam String password, HttpSession session) {
-        UserEntity user = userService.getUser(fullName,password);
+    public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password, HttpSession session) {
+        UserEntity user = userService.getUser(email,password);
 
         if (user == null) {
             return ResponseEntity.status(401).body("Invalid credentials");
@@ -134,6 +152,8 @@ public class UserController  {
         session.removeAttribute("userId");
         return ResponseEntity.ok("logged out");
     }
+
+
     //
 
 }

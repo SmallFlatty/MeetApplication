@@ -12,11 +12,13 @@ public class UserServiceJPA implements UserService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+//    private final UserService userService;
 
 
     public UserServiceJPA(UserRepository userRepository, PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+//        this.userService = userService;
     }
 
 
@@ -94,6 +96,11 @@ public class UserServiceJPA implements UserService {
     @Override
     public UserEntity getAllUserInformation(String fullName) {
         return userRepository.AllUserInformation(fullName);
+    }
+
+    @Override
+    public boolean emailExists(String email) {
+        return userRepository.getUserByEmail(email);
     }
 
 

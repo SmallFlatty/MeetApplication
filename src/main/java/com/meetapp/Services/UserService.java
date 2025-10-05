@@ -1,6 +1,5 @@
 package com.meetapp.Services;
 
-import com.meetapp.Model.MeetEntity;
 import com.meetapp.Model.UserEntity;
 
 import java.util.List;
@@ -22,9 +21,12 @@ public interface UserService {
 
     long getAdminId();
 
-    UserEntity getUser(String fullName , String password);
+    UserEntity getUser(String email , String password);
 
     UserEntity getUserById(long userId);
 
     UserEntity getAllUserInformation(String fullName);
+
+    boolean emailExists(String email);
+
 }

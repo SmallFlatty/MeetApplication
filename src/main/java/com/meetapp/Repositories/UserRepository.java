@@ -31,12 +31,16 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query("SELECT u.id FROM UserEntity u WHERE u.role = 'ADMIN'")
     long getAdminId();
 
-    @Query("SELECT u FROM UserEntity u WHERE u.fullName = :fullName")
-    UserEntity getUser(@Param("fullName") String fullName);
+    @Query("SELECT u FROM UserEntity u WHERE u.email = :email")
+    UserEntity getUser(@Param("email") String email);
 
     @Query("SELECT u FROM UserEntity u WHERE u.id = :id")
     UserEntity getUserById(@Param("id") long id);
 
     @Query("SELECT u FROM UserEntity u WHERE u.fullName = :fullName")
     UserEntity AllUserInformation(@Param("fullName") String fullName);
+
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN TRUE ELSE FALSE END " +
+            "FROM UserEntity u WHERE u.email = :email")
+    boolean getUserByEmail(@Param("email") String email);
 }

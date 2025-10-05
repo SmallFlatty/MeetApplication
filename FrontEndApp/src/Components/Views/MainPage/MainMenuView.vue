@@ -12,9 +12,26 @@ const router = useRouter()
 const API = 'http://localhost:8080/api/user'
 const user = ref<UserInfo | null>(null)
 const showLogin = ref(false)
+const showRegistration = ref(false)
+const roles = ['ADMIN', 'WORKER']
+
+// login
 const fullName = ref('')
 const password = ref('')
 const loginError = ref<string | null>(null)
+
+//register
+const email = ref('')
+const selectedRole = ref('')
+const registerError = ref<string | null>(null)
+const registerInfo = ref<string | null>(null)
+const isFormValid = computed(() =>
+    email.value.trim() !== "" &&
+    password.value.trim() !== "" &&
+    fullName.value.trim() !== "" &&
+    selectedRole.value.trim() !== ""
+)
+
 
 
 onMounted(() => {
@@ -23,15 +40,16 @@ onMounted(() => {
 
 async function signIn() {
   loginError.value = null
-
+  registerInfo.value = null
   try {
+
     // 1) Надсилаємо POST-запит на /login для створення сесії
     const loginRes = await fetch(`${API}/login`, {
       method: 'POST',
       credentials: 'include', // важливо для cookie-сесії
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
-        fullName: fullName.value,
+        email: email.value,
         password: password.value
       })
     })
@@ -56,6 +74,43 @@ async function signIn() {
   } catch (err) {
     console.error(err)
     loginError.value = 'Login failed. Check API/CORS/network.'
+  }
+}
+
+async function register() {
+  try{
+    const registerRes = await fetch(`${API}/create-user`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        email: email.value,
+        password: password.value,
+        fullName: fullName.value,
+        role: selectedRole.value
+      })
+    })
+
+    if (!registerRes.ok) {
+      try {
+        const errorText = await registerRes.text() // пытаемся прочитать тело как текст
+        registerError.value = errorText?.trim()
+            ? errorText // если сервер прислал сообщение, используем его
+            : 'Something went wrong' // иначе fallback
+      } catch (e) {
+        registerError.value = 'Something went wrong' // если чтение тела сломалось
+      }
+      return
+    }
+
+    showLogin.value = true
+    showRegistration.value = false
+
+    registerInfo.value = "Your account has been created successfully. Now please login"
+  }
+  catch (error) {
+    console.error(error)
+    registerError.value = 'Register failed. Check API/CORS/network.'
   }
 }
 
@@ -160,7 +215,8 @@ function go(to:any){ if (to?.name) router.push(to) }
             @click="router.push({ name: 'profile', query: {fullName: user.name } })">Profile
         </button>
         <button v-if="user" class="btn danger" @click="logout">Logout</button>
-        <button v-if="!user && !showLogin" class="btn" @click="showLogin = true">Sign In</button>
+        <button v-if="!user && !showLogin" class="btn" @click="showLogin = true; showRegistration = false">Sign In</button>
+        <button v-if="!user && !showRegistration" class="btn" @click="showRegistration = true; showLogin = false">Register</button>
       </div>
     </header>
 
@@ -168,10 +224,34 @@ function go(to:any){ if (to?.name) router.push(to) }
 
     <!-- Login panel -->
     <div v-if="!user && showLogin" class="login">
-      <input v-model="fullName" placeholder="Full name" autocomplete="username" />
+      <h2 class="login-title">Sign In</h2>
+      <input v-model="email" placeholder="Email" autocomplete="email" />
       <input v-model="password" type="password" placeholder="Password" autocomplete="current-password" />
-      <button class="btn" @click="signIn">Sign In</button>
+      <button class="btn" @click="signIn" :disabled="!email || !password">
+        Sign In
+      </button>
+
       <p v-if="loginError" class="error">{{ loginError }}</p>
+      <p v-if="registerInfo" class="error">{{ registerInfo }}</p>
+    </div>
+
+    <!-- Register panel -->
+    <div v-if="!user && showRegistration" class="registration">
+      <h2 class="reg-title">Create account</h2>
+      <input v-model="fullName" placeholder="Full name" autocomplete="username" />
+      <input v-model="email" placeholder="Email" autocomplete="email" />
+      <input v-model="password" type="password" placeholder="Password" autocomplete="current-password" />
+      <label for="role">Select role:</label>
+      <select v-model="selectedRole" id="role" class="input-role">
+        <option disabled value="">-- choose one --</option>
+        <option v-for="role in roles" :key="role" :value="role">{{role}}</option>
+      </select>
+
+      <div class="reg-buttons">
+        <button class="btn" @click="register" :disabled="!isFormValid">Register</button>
+      </div>
+
+      <p v-if="registerError" class="error">{{ registerError }}</p>
     </div>
 
     <!-- Role-aware actions -->
@@ -280,25 +360,40 @@ function go(to:any){ if (to?.name) router.push(to) }
   background: linear-gradient(135deg, var(--danger-1), var(--danger-2));
   box-shadow: 0 6px 18px rgba(255, 70, 109, 0.3);
 }
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 /* Логін */
 .login {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 12px;
-  align-items: center;
+  display: flex;
+  flex-direction: column; /* поля идут в столбик */
+  gap: 12px;              /* расстояние между элементами */
+  align-items: center;   /* все элементы по ширине контейнера */
+  max-width: 320px;
+  margin: 0 auto;
 }
+
+.login-title {
+  text-align: center;
+  color: var(--text);
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+}
+
 .login input {
-  height: 42px;
+  height: 20px;
   padding: 10px 14px;
   border-radius: 12px;
-  background-color: #1d1738; /* 🔄 Однотонне, без градієнта */
+  background-color: #1d1738;
   color: var(--text);
   border: none;
   outline: none;
   box-shadow: none;
   transition: background 0.3s ease;
 }
+
 .login input:focus {
   background-color: #231b3f;
   box-shadow: 0 0 0 3px var(--ring);
@@ -307,10 +402,82 @@ function go(to:any){ if (to?.name) router.push(to) }
 .login input::placeholder {
   color: #cfc8ea88;
 }
-.error {
-  color: #ff9b9b;
-  font-weight: 700;
-  grid-column: 1 / -1;
+
+/* Реєстрація */
+.registration {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+  max-width: 340px;
+  margin: 0 auto;
+}
+
+.registration input {
+  height: 20px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background-color: #1d1738;
+  color: var(--text);
+  border: none;
+  outline: none;
+  box-shadow: none;
+  transition: background 0.3s ease;
+}
+
+.registration input:focus {
+  background-color: #231b3f;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.registration input::placeholder {
+  color: #cfc8ea88;
+}
+
+.reg-title {
+  text-align: center;
+  color: var(--text);
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+}
+
+.reg-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.input-role {
+  height: 42px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #443c6a;
+  background-color: #231b3f;
+  color: var(--text);
+  font-size: 1rem;
+  appearance: none; /* убирает стандартную стрелку браузера */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%23cfc8ea' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  cursor: pointer;
+  transition: border 0.3s ease, background 0.3s ease;
+}
+
+.input-role:hover {
+  border-color: #7066a2;
+  background-color: #2c2350;
+}
+
+.input-role:focus {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.role-label {
+  color: #cfc8ea;
+  font-weight: 500;
 }
 
 /* Сітка */
