@@ -112,8 +112,8 @@ public class UserController  {
 
     // Save user with reload page
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String fullName, @RequestParam String password, HttpSession session) {
-        UserEntity user = userService.getUser(fullName,password);
+    public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password, HttpSession session) {
+        UserEntity user = userService.getUser(email,password);
 
         if (user == null) {
             return ResponseEntity.status(401).body("Invalid credentials");

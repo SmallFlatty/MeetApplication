@@ -21,7 +21,7 @@ public interface UserService {
 
     long getAdminId();
 
-    UserEntity getUser(String fullName , String password);
+    UserEntity getUser(String email , String password);
 
     UserEntity getUserById(long userId);
 

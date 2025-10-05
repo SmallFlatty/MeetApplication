@@ -31,8 +31,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query("SELECT u.id FROM UserEntity u WHERE u.role = 'ADMIN'")
     long getAdminId();
 
-    @Query("SELECT u FROM UserEntity u WHERE u.fullName = :fullName")
-    UserEntity getUser(@Param("fullName") String fullName);
+    @Query("SELECT u FROM UserEntity u WHERE u.email = :email")
+    UserEntity getUser(@Param("email") String email);
 
     @Query("SELECT u FROM UserEntity u WHERE u.id = :id")
     UserEntity getUserById(@Param("id") long id);

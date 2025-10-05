@@ -49,7 +49,7 @@ async function signIn() {
       credentials: 'include', // важливо для cookie-сесії
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
-        fullName: fullName.value,
+        email: email.value,
         password: password.value
       })
     })
@@ -225,9 +225,9 @@ function go(to:any){ if (to?.name) router.push(to) }
     <!-- Login panel -->
     <div v-if="!user && showLogin" class="login">
       <h2 class="login-title">Sign In</h2>
-      <input v-model="fullName" placeholder="Full name" autocomplete="username" />
+      <input v-model="email" placeholder="Email" autocomplete="email" />
       <input v-model="password" type="password" placeholder="Password" autocomplete="current-password" />
-      <button class="btn" @click="signIn" :disabled="!fullName || !password">
+      <button class="btn" @click="signIn" :disabled="!email || !password">
         Sign In
       </button>
 
@@ -370,7 +370,7 @@ function go(to:any){ if (to?.name) router.push(to) }
   display: flex;
   flex-direction: column; /* поля идут в столбик */
   gap: 12px;              /* расстояние между элементами */
-  align-items: stretch;   /* все элементы по ширине контейнера */
+  align-items: center;   /* все элементы по ширине контейнера */
   max-width: 320px;
   margin: 0 auto;
 }
