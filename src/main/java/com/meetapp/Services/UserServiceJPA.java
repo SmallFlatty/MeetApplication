@@ -1,9 +1,7 @@
 package com.meetapp.Services;
 
 import com.meetapp.Model.UserEntity;
-import com.meetapp.Repositories.MeetRepository;
 import com.meetapp.Repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

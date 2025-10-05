@@ -5,7 +5,7 @@ const MainMenu = () => import( '@/Components/Views/MainPage/MainMenuView.vue')
 
 //General Pages
 const Profile = () => import('@/Components/Views/GeneralPages/ProfileView.vue')
-const Support= () => import('@/Components/Views/GeneralPages/SupportView.vue')
+const AppChat= () => import('@/Components/Views/GeneralPages/AppChat.vue')
 const Report  = () => import('@/Components/Views/GeneralPages/ProblemReportView.vue')
 
 //User Tools
@@ -22,7 +22,7 @@ const routes = [
 
     //General Pages
     {path: '/profile', name: 'profile', component: Profile},
-    {path: '/support', name: 'support', component: Support},
+    {path: '/chat', name: 'chat', component: AppChat,props: route => ({ senderName: String(route.query.senderName || '') }) },
     {path: '/report', name: 'report', component: Report},
 
     //User Tools
