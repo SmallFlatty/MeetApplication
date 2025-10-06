@@ -22,6 +22,10 @@ onMounted(() => {
       .then(data => {
         user.value = data
         avatarUrl.value = `http://localhost:8080/UsersAvatar/${user.value.fullName}.png?${Date.now()}`
+
+//rewrite with json sending info!
+
+        
       })
       .catch(err => {
         console.error('Failed to fetch user info:', err)
