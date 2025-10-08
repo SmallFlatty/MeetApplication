@@ -131,7 +131,7 @@ function sendMessage() {
     });
     text.value = '';
   } catch (e) {
-    console.error('Failed to publish message', e);
+    console.error('Failed to publish message', e)
   }
 }
 
@@ -160,10 +160,10 @@ onUnmounted(disconnect);
   <div class="app-chat-page">
     <div class="topbar">
       <button class="btn btn-back" @click="goBack">← Back</button>
-      <h1 class="page-title">Chat</h1>
-      <div class="status-chip" :class="{ online: connected }">
-        {{ connected ? 'online' : 'offline' }}
-      </div>
+      <h1 class="page-title"></h1>
+<!--      <div class="status-chip" :class="{ online: connected }">-->
+<!--        {{ connected ? 'online' : 'offline' }}-->
+<!--      </div>-->
     </div>
 
     <div class="content-grid">
@@ -248,59 +248,55 @@ html, body, #app {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 0;
   border-radius: 12px;
-  border: 1.2px solid rgba(255,255,255,0.85);
-  background: linear-gradient(135deg, #221028 0%, #3b1b4a 35%, #5a2a8a 75%, #6f3bd9 100%);
+  border: 1.2px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, #0b0611 0%, #1b0f26 50%, #2b1650 100%);
   overflow: hidden;
 }
 
 
 .messages {
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 1;
   overflow-y: auto;
   padding: 16px;
-  box-sizing: border-box;
-  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .message {
-  background: transparent; /* прозорий всередині */
-  border: 1px solid rgba(255,255,255,0.85); /* тонка біла рамка */
-  padding: 10px 12px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  box-shadow: none;
+  max-width: 60%;
+  align-self: flex-start;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #f4f0ff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  word-wrap: break-word;
 }
 
 .message .meta {
-  display: flex;
-  justify-content: space-between; /* ім'я зліва, час праворуч */
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 4px;
 }
 
 .message .sender {
-  display: inline-block;
-  font-weight: 800;
-  color: #fff; /* білий для хорошого контрасту */
-  font-size: 13px;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+  font-weight: 700;
+  color: #a6b3ff;
 }
 
 .message .text {
-  color: #f3eefc;
+  white-space: pre-wrap;
+  font-size: 14px;
   line-height: 1.4;
-  white-space: pre-wrap; /* збереження переносів */
 }
 
 .message .time {
   color: rgba(255,255,255,0.65);
   font-size: 12px;
 }
-
 .composer {
   flex: 0 0 auto;
   display:flex;
@@ -311,10 +307,10 @@ html, body, #app {
 }
 
 .message.mine {
-  border-color: rgba(255,210,210,0.95);
-  box-shadow: 0 6px 18px rgba(255,50,60,0.05);
-  /* необов'язково: інший фон тонкий */
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,180,180,0.01));
+  align-self: flex-end;
+  border-color: rgba(100, 160, 255, 0.6);
+  background: linear-gradient(135deg, rgba(40, 70, 180, 0.35), rgba(90, 120, 255, 0.2));
+  box-shadow: 0 4px 12px rgba(50, 90, 255, 0.25);
 }
 
 .right-col .panel {

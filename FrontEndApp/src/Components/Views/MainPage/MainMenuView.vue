@@ -145,16 +145,16 @@ const actions = computed(() => {
     { key:'create-meeting', label:'Create Meeting', desc:'Schedule a new meeting', to:{ name:'meetings.create' }, icon:'➕' },
   ]
 
-  // для WORKER
-  if (user.value?.role === 'WORKER') {
-    base.push({
-      key:'create-meeting-worker',
-      label:'Create Meet for Worker',
-      desc:'Submit a request for a meeting',
-      to:{ name:'meetings.worker' },
-      icon:'👨‍💻'
-    })
-  }
+  // // для WORKER
+  // if (user.value?.role === 'WORKER') {
+  //   base.push({
+  //     key:'create-meeting-worker',
+  //     label:'Create Meet for Worker',
+  //     desc:'Submit a request for a meeting',
+  //     to:{ name:'meetings.worker' },
+  //     icon:'👨‍💻'
+  //   })
+  // }
 
   // для ADMIN
   if (user.value?.role === 'ADMIN') {
