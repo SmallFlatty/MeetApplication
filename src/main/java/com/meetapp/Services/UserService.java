@@ -1,7 +1,6 @@
 package com.meetapp.Services;
 
 import com.meetapp.Model.UserEntity;
-
 import java.util.List;
 
 public interface UserService {

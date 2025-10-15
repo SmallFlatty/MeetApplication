@@ -9,16 +9,14 @@ import java.util.List;
 
 @Service
 public class UserServiceJPA implements UserService {
-    private final UserRepository userRepository;
 
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-//    private final UserService userService;
 
 
     public UserServiceJPA(UserRepository userRepository, PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-//        this.userService = userService;
     }
 
 
@@ -102,6 +100,5 @@ public class UserServiceJPA implements UserService {
     public boolean emailExists(String email) {
         return userRepository.getUserByEmail(email);
     }
-
 
 }

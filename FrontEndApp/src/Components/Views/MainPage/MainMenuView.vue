@@ -9,7 +9,8 @@ type Role = 'ADMIN' | 'WORKER'
 interface UserInfo { id: number; name: string; role: Role }
 
 const router = useRouter()
-const API = 'http://localhost:8080/api/user'
+const UserAPI = 'http://localhost:8080/api/user'
+const statusAPI = 'http://localhost:8080/api/status'
 const user = ref<UserInfo | null>(null)
 const showLogin = ref(false)
 const showRegistration = ref(false)
@@ -44,7 +45,7 @@ async function signIn() {
   try {
 
     // 1) Надсилаємо POST-запит на /login для створення сесії
-    const loginRes = await fetch(`${API}/login`, {
+    const loginRes = await fetch(`${UserAPI}/login`, {
       method: 'POST',
       credentials: 'include', // важливо для cookie-сесії
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -67,6 +68,18 @@ async function signIn() {
       name: data.fullName,
       role: role
     }
+    const statusUrl = new URL(`${statusAPI}/change-status`);
+    statusUrl.search = new URLSearchParams({ fullName: user.value.name , status: 'Online'}).toString();
+
+    const statusRes = await fetch(statusUrl.toString(), {
+      method: 'PUT',
+      credentials: 'include'
+    });
+
+    if (!statusRes.ok) {
+      console.warn('⚠️ Failed to change status',
+          statusRes.status, await statusRes.text().catch(() => ''));
+    }
 
     showLogin.value = false
     fullName.value = ''
@@ -75,11 +88,49 @@ async function signIn() {
     console.error(err)
     loginError.value = 'Login failed. Check API/CORS/network.'
   }
-}
+}// Stats Works
+
+// async function register() {
+//   try{
+//     const registerRes = await fetch(`${API}/create-user`, {
+//       method: 'POST',
+//       credentials: 'include',
+//       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+//       body: new URLSearchParams({
+//         email: email.value,
+//         password: password.value,
+//         fullName: fullName.value,
+//         role: selectedRole.value
+//       })
+//     })
+//
+//     if (!registerRes.ok) {
+//       try {
+//         const errorText = await registerRes.text() // пытаемся прочитать тело как текст
+//         registerError.value = errorText?.trim()
+//             ? errorText // если сервер прислал сообщение, используем его
+//             : 'Something went wrong' // иначе fallback
+//       } catch (e) {
+//         registerError.value = 'Something went wrong' // если чтение тела сломалось
+//       }
+//       return
+//     }
+//
+//     showLogin.value = true
+//     showRegistration.value = false
+//
+//     registerInfo.value = "Your account has been created successfully. Now please login"
+//   }
+//   catch (error) {
+//     console.error(error)
+//     registerError.value = 'Register failed. Check API/CORS/network.'
+//   }
+// }
 
 async function register() {
-  try{
-    const registerRes = await fetch(`${API}/create-user`, {
+  try {
+    // Create User
+    const registerRes = await fetch(`${UserAPI}/create-user`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -89,44 +140,90 @@ async function register() {
         fullName: fullName.value,
         role: selectedRole.value
       })
-    })
+    });
 
+    // If Error
     if (!registerRes.ok) {
       try {
-        const errorText = await registerRes.text() // пытаемся прочитать тело как текст
+        const errorText = await registerRes.text();
         registerError.value = errorText?.trim()
-            ? errorText // если сервер прислал сообщение, используем его
-            : 'Something went wrong' // иначе fallback
+            ? errorText
+            : 'Something went wrong';
       } catch (e) {
-        registerError.value = 'Something went wrong' // если чтение тела сломалось
+        registerError.value = 'Something went wrong';
       }
-      return
+      return;
     }
 
-    showLogin.value = true
-    showRegistration.value = false
+    // Create Status
+    const statusUrl = new URL(`${statusAPI}/create-status`);
+    statusUrl.search = new URLSearchParams({ fullName: fullName.value }).toString();
 
-    registerInfo.value = "Your account has been created successfully. Now please login"
-  }
-  catch (error) {
-    console.error(error)
-    registerError.value = 'Register failed. Check API/CORS/network.'
-  }
-}
+    const statusRes = await fetch(statusUrl.toString(), {
+      method: 'POST',
+      credentials: 'include'
+    });
 
-  async function logout() {
-    await fetch(`${API}/logout`, {
+    if (!statusRes.ok) {
+      // не блокуємо логін, просто лог/підказка
+      console.warn('⚠️ User created, but failed to create status',
+          statusRes.status, await statusRes.text().catch(() => ''));
+    }
+
+    // 🟢 3. Показуємо повідомлення
+    showLogin.value = true;
+    showRegistration.value = false;
+    registerInfo.value = "Your account has been created successfully. Now please login";
+
+  } catch (error) {
+    console.error(error);
+    registerError.value = 'Register failed. Check API/CORS/network.';
+  }
+}// Stats Works
+
+
+async function logout() {
+    await fetch(`${UserAPI}/logout`, {
       method: 'POST',
       credentials: 'include'
     })
+
+  const statusUrl = new URL(`${statusAPI}/change-status`);
+  statusUrl.search = new URLSearchParams({ fullName: user.value.name , status: 'Offline'}).toString();
+
+  const statusRes = await fetch(statusUrl.toString(), {
+    method: 'PUT',
+    credentials: 'include'
+  });
+
+  if (!statusRes.ok) {
+    console.warn('⚠️ Failed to change status',
+        statusRes.status, await statusRes.text().catch(() => ''));
+  }
+
     user.value = null
     showLogin.value = true
-  }
+  } //Stats Works
 
   async function checkSession() {
     try {
-      const res = await fetch(`${API}/checkme`, { credentials: 'include' })
-      if (!res.ok) return
+      const res = await fetch(`${UserAPI}/checkme`, { credentials: 'include' })
+      if (!res.ok) {
+
+        const statusUrl = new URL(`${statusAPI}/change-status`);
+        statusUrl.search = new URLSearchParams({ fullName: user.value.name , status: 'Offline'}).toString();
+
+        const statusRes = await fetch(statusUrl.toString(), {
+          method: 'PUT',
+          credentials: 'include'
+        });
+
+        if (!statusRes.ok) {
+          console.warn('⚠️ Failed to change status',
+              statusRes.status, await statusRes.text().catch(() => ''));
+        }
+        return
+      }
 
       const data = await res.json()
       user.value = {
@@ -137,7 +234,7 @@ async function register() {
     } catch (err) {
       console.warn('Session check failed')
     }
-  }
+  } //Maybe work, idn how to check it
 
 const actions = computed(() => {
   const base = [

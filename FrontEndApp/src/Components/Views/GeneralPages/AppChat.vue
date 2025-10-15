@@ -49,6 +49,30 @@ const onlineUsers = ref<string[]>([]);
 let stompClient: Client | null = null;
 let subscription: any = null;
 
+type UserStatus = { fullName: string; status: 'Online' | 'Offline' };
+
+const userStatuses = ref<UserStatus[]>([]);
+let statusTimer: ReturnType<typeof setInterval> | null = null;
+
+async function loadStatuses() {
+  try {
+    const res = await fetch('http://localhost:8080/api/status/users-status', {
+      credentials: 'include' // якщо сесія на куках
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const rows = await res.json(); // очікуємо: [ [fullName, status], ... ]
+    userStatuses.value = Array.isArray(rows)
+        ? rows.map((r: any) => ({
+          fullName: String(r?.[0] ?? ''),
+          status: String(r?.[1] ?? 'Offline') as 'Online' | 'Offline'
+        }))
+        : [];
+  } catch (e) {
+    console.warn('Failed to load user statuses:', e);
+  }
+}
+
+
 function scrollMessagesToBottom(smooth = true) {
   nextTick(() => {
     const el = document.querySelector('.messages') as HTMLElement | null;
@@ -152,8 +176,16 @@ onMounted(async () => {
   }
 
   connect();
+  loadStatuses();
+  statusTimer = setInterval(loadStatuses, 5000);
 });
-onUnmounted(disconnect);
+onUnmounted(() => {
+  disconnect();
+  if (statusTimer) {
+    clearInterval(statusTimer);
+    statusTimer = null;
+  }
+});
 </script>
 
 <template>
@@ -195,15 +227,20 @@ onUnmounted(disconnect);
       <!-- Right: online users / future content (1/3) -->
       <aside class="right-col">
         <div class="panel">
-          <h3 class="panel-title">Online</h3>
-          <div class="online-list">
-            <div v-if="onlineUsers.length === 0" class="empty">No one online yet</div>
-            <div v-for="(u, idx) in onlineUsers" :key="idx" class="online-item">
-              <span class="dot"></span> {{ u }}
-            </div>
+          <h3 class="panel-title">Team status</h3>
+
+          <div v-if="userStatuses.length === 0" class="empty">No data yet</div>
+
+          <div v-for="u in userStatuses" :key="u.fullName" class="status-row">
+            <span class="dot" :class="u.status === 'Online' ? 'green' : 'red'"></span>
+            <span class="name">{{ u.fullName }}</span>
+            <span class="badge" :class="u.status === 'Online' ? 'online' : 'offline'">
+        {{ u.status }}
+      </span>
           </div>
         </div>
       </aside>
+
     </div>
   </div>
 </template>
@@ -355,5 +392,35 @@ html, body, #app {
   .right-col .panel { min-height: 160px; }
   .chat-wrapper { min-height: 360px; }
 }
+
+.panel-title { margin: 0 0 8px; font-weight: 800; }
+
+.status-row {
+  display: grid;
+  grid-template-columns: 16px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 6px;
+  border-bottom: 1px dashed rgba(0,0,0,0.06);
+}
+
+.status-row:last-child { border-bottom: none; }
+
+.dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.06) inset;
+}
+.dot.green { background: #22c55e; }  /* Online */
+.dot.red   { background: #ef4444; }  /* Offline */
+
+.name { font-weight: 600; }
+
+.badge {
+  font-size: 12px; padding: 4px 8px; border-radius: 999px;
+  border: 1px solid transparent; user-select: none;
+}
+.badge.online  { background: rgba(34,197,94,0.12);  color: #166534; border-color: rgba(34,197,94,0.25); }
+.badge.offline { background: rgba(239,68,68,0.12);  color: #7f1d1d; border-color: rgba(239,68,68,0.25); }
+
 
 </style>
