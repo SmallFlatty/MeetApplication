@@ -18,7 +18,7 @@ public class MeetController {
         this.meetService = meetService;
     }
 
-    @PostMapping("/meetings/create")
+    @PostMapping("/create")
     public MeetEntity createMeet(@RequestBody MeetEntity meetEntity) {
         return meetService.createMeet(
                 meetEntity.getTitle(),
@@ -32,22 +32,22 @@ public class MeetController {
     }
 
 
-    @GetMapping("/meetings/all-meets")
+    @GetMapping("/all-meets")
     public List<MeetEntity> getAllMeets() {
         return meetService.getAllMeetings();
     }
 
-    @GetMapping("/meetings/{userId}")
-    public List<MeetEntity> getMeetsForPerson(@PathVariable long userId) {
+    @GetMapping("/{userId}")
+    public List<Object []> getMeetsForPerson(@PathVariable long userId) {
         return meetService.getMeetsForPerson(userId);
     }
 
-    @DeleteMapping("/meetings/delete-meet")
+    @DeleteMapping("/delete-meet")
     public void deleteMeet(@RequestBody Long meetId) {
         meetService.deleteMeet(meetId);
     }
 
-    @PutMapping("/meetings/")
+    @PutMapping("/change-date")
     public void changeMeetDate(@RequestParam Long meetId, @RequestParam LocalDateTime startAt , @RequestParam LocalDateTime endAt ) {
         meetService.changeMeetDate(meetId, startAt, endAt);
     }

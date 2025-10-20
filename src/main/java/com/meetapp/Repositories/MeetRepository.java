@@ -13,10 +13,8 @@ import java.util.List;
 
 @Repository
 public interface MeetRepository extends JpaRepository<MeetEntity, Long> {
-    @Query("SELECT m FROM MeetEntity m WHERE m.startAt > CURRENT_TIMESTAMP")
+    @Query("SELECT m FROM MeetEntity m")
     List<MeetEntity> getAllMeets();
-
-    List<MeetEntity> findAllByUser_Id(Long userId);
 
     @Modifying
     @Transactional
@@ -38,4 +36,7 @@ public interface MeetRepository extends JpaRepository<MeetEntity, Long> {
 
     @Query("SELECT u.id FROM MeetEntity u WHERE u.user.id <> :userId")
     List<Long> getAllMeetsIdsForWorker(@Param("userId")  long userId);
+
+    @Query("SELECT u FROM MeetEntity u WHERE u.user.id = :userId ")
+    List<Object []> getMeetsForPerson(@Param("userId")long userId);
 }

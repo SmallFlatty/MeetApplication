@@ -38,8 +38,8 @@ public class MeetServiceJPA implements MeetService {
     }
 
     @Override
-    public List<MeetEntity> getMeetsForPerson(long userId) {
-        return meetRepository.findAllByUser_Id(userId);
+    public List<Object []> getMeetsForPerson(long userId) {
+        return meetRepository.getMeetsForPerson(userId);
     }
 
     @Override

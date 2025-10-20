@@ -12,8 +12,7 @@ const selectedFile = ref<File | null>(null)
 
 onMounted(() => {
   const fullName = route.query.fullName as string
-
-  if (fullName == null) return;
+  if (fullName == null) return
 
   fetch(`${API}/all-info?fullName=${fullName}`, {
     credentials: 'include'
@@ -22,15 +21,13 @@ onMounted(() => {
       .then(data => {
         user.value = data
         avatarUrl.value = `http://localhost:8080/UsersAvatar/${user.value.fullName}.png?${Date.now()}`
-
-//rewrite with json sending info!
-
-        
+        // rewrite with json sending info!
       })
       .catch(err => {
         console.error('Failed to fetch user info:', err)
       })
 })
+
 
 function onFileChange(event: Event) {
   const files = (event.target as HTMLInputElement).files

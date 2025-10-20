@@ -13,3 +13,10 @@
 <template>
   <router-view />
 </template>
+<style scoped>
+:root {
+  --c-border: #e5e7eb;
+  --c-bg: #ffffff;
+  --c-text: #111827;
+}
+</style>

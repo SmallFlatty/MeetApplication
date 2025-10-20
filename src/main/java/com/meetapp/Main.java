@@ -1,6 +1,7 @@
 package com.meetapp;
 
-import com.meetapp.ConsoleUI.ConsoleUI;
+//import com.meetapp.ConsoleUI.ConsoleUI;
+import com.meetapp.Controller.VerificationNameController;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,8 +26,8 @@ public class Main implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        ConsoleUI ui = applicationContext.getBean(ConsoleUI.class);
-        ui.start();
+//        ConsoleUI ui = applicationContext.getBean(ConsoleUI.class);
+//        ui.start();
     }
 
     @Bean
