@@ -38,7 +38,7 @@ public class MeetController {
     }
 
     @GetMapping("/{userId}")
-    public List<Object []> getMeetsForPerson(@PathVariable long userId) {
+    public List<MeetEntity> getMeetsForPerson(@PathVariable long userId) {
         return meetService.getMeetsForPerson(userId);
     }
 

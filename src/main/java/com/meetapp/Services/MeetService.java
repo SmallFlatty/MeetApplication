@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MeetService {
-    List<Object []> getMeetsForPerson(long userId);
+    List<MeetEntity> getMeetsForPerson(long userId);
 
     List<MeetEntity> getAllMeetings();
 

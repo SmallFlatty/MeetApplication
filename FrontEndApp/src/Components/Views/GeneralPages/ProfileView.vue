@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import {useRoute, useRouter} from 'vue-router'
+import CryptoJS from 'crypto-js'
 
 const router = useRouter()
 const route = useRoute()
@@ -11,23 +12,41 @@ const avatarUrl = ref('')
 const selectedFile = ref<File | null>(null)
 
 onMounted(() => {
-  const fullName = route.query.fullName as string
-  if (fullName == null) return
+  const encryptedName = route.query.u as string
+  if (!encryptedName) {
+    console.warn('No encrypted name found')
+    return
+  }
 
-  fetch(`${API}/all-info?fullName=${fullName}`, {
+  const fullName = decryptName(encryptedName)
+  if (!fullName) {
+    console.warn('Invalid name encryption')
+    return
+  }
+
+  fetch(`${API}/all-info?fullName=${encodeURIComponent(fullName)}`, {
     credentials: 'include'
   })
       .then(res => res.json())
       .then(data => {
         user.value = data
         avatarUrl.value = `http://localhost:8080/UsersAvatar/${user.value.fullName}.png?${Date.now()}`
-        // rewrite with json sending info!
       })
       .catch(err => {
         console.error('Failed to fetch user info:', err)
       })
 })
+const SECRET_KEY = 'MASHONOCKA'
 
+function decryptName(encrypted: string): string | null {
+  try {
+    const bytes = CryptoJS.AES.decrypt(decodeURIComponent(encrypted), SECRET_KEY)
+    return bytes.toString(CryptoJS.enc.Utf8)
+  } catch (e) {
+    console.error('Decryption failed:', e)
+    return null
+  }
+}
 
 function onFileChange(event: Event) {
   const files = (event.target as HTMLInputElement).files

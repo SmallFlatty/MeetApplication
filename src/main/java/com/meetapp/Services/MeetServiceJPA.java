@@ -38,7 +38,7 @@ public class MeetServiceJPA implements MeetService {
     }
 
     @Override
-    public List<Object []> getMeetsForPerson(long userId) {
+    public List<MeetEntity> getMeetsForPerson(long userId) {
         return meetRepository.getMeetsForPerson(userId);
     }
 

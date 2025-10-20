@@ -3,11 +3,12 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import MainLogo from '@/Assets/MainLogo.png'
 import {onMounted} from "vue";
-
+import CryptoJS from 'crypto-js'
 
 type Role = 'ADMIN' | 'WORKER'
 interface UserInfo { id: number; name: string; role: Role }
 
+const SECRET_KEY = 'MASHONOCKA'
 const router = useRouter()
 const UserAPI = 'http://localhost:8080/api/user'
 const statusAPI = 'http://localhost:8080/api/status'
@@ -38,6 +39,27 @@ const isFormValid = computed(() =>
 onMounted(() => {
   checkSession()
 })
+
+function encryptName(name: string): string {
+  return encodeURIComponent(
+      CryptoJS.AES.encrypt(name, SECRET_KEY).toString()
+  )
+}
+
+function goProfile(userName: string) {
+  const encrypted = encryptName(userName)
+  router.push({ name: 'profile', query: { u: encrypted } })
+}
+
+function goChat(userName: string) {
+  const encrypted = encryptName(userName)
+  router.push({ name: 'chat', query: { senderName: encrypted } })
+}
+
+function goMineMeets(userName: string) {
+  const encrypted = encryptName(userName)
+  router.push({ name: 'meetings.mine', query: { senderName: encrypted } })
+}
 
 async function signIn() {
   loginError.value = null
@@ -183,10 +205,10 @@ async function register() {
 
 
 async function logout() {
-    await fetch(`${UserAPI}/logout`, {
-      method: 'POST',
-      credentials: 'include'
-    })
+  await fetch(`${UserAPI}/logout`, {
+    method: 'POST',
+    credentials: 'include'
+  })
 
   const statusUrl = new URL(`${statusAPI}/change-status`);
   statusUrl.search = new URLSearchParams({ fullName: user.value.name , status: 'Offline'}).toString();
@@ -201,57 +223,46 @@ async function logout() {
         statusRes.status, await statusRes.text().catch(() => ''));
   }
 
-    user.value = null
-    showLogin.value = true
-  } //Stats Works
+  user.value = null
+  showLogin.value = true
+} //Stats Works
 
-  async function checkSession() {
-    try {
-      const res = await fetch(`${UserAPI}/checkme`, { credentials: 'include' })
-      if (!res.ok) {
+async function checkSession() {
+  try {
+    const res = await fetch(`${UserAPI}/checkme`, { credentials: 'include' })
+    if (!res.ok) {
 
-        const statusUrl = new URL(`${statusAPI}/change-status`);
-        statusUrl.search = new URLSearchParams({ fullName: user.value.name , status: 'Offline'}).toString();
+      const statusUrl = new URL(`${statusAPI}/change-status`);
+      statusUrl.search = new URLSearchParams({ fullName: user.value.name , status: 'Offline'}).toString();
 
-        const statusRes = await fetch(statusUrl.toString(), {
-          method: 'PUT',
-          credentials: 'include'
-        });
+      const statusRes = await fetch(statusUrl.toString(), {
+        method: 'PUT',
+        credentials: 'include'
+      });
 
-        if (!statusRes.ok) {
-          console.warn('⚠️ Failed to change status',
-              statusRes.status, await statusRes.text().catch(() => ''));
-        }
-        return
+      if (!statusRes.ok) {
+        console.warn('⚠️ Failed to change status',
+            statusRes.status, await statusRes.text().catch(() => ''));
       }
-
-      const data = await res.json()
-      user.value = {
-        id: data.id,
-        name: data.fullName,
-        role: data.role
-      }
-    } catch (err) {
-      console.warn('Session check failed')
+      return
     }
-  } //Maybe work, idn how to check it
+
+    const data = await res.json()
+    user.value = {
+      id: data.id,
+      name: data.fullName,
+      role: data.role
+    }
+  } catch (err) {
+    console.warn('Session check failed')
+  }
+} //Maybe work, idn how to check it
 
 const actions = computed(() => {
   const base = [
     { key:'my-meetings', label:'My Meetings', desc:'View and manage your meetings', to:{ name:'meetings.mine' }, icon:'📅' },
     { key:'create-meeting', label:'Create Meeting', desc:'Schedule a new meeting', to:{ name:'meetings.create' }, icon:'➕' },
   ]
-
-  // // для WORKER
-  // if (user.value?.role === 'WORKER') {
-  //   base.push({
-  //     key:'create-meeting-worker',
-  //     label:'Create Meet for Worker',
-  //     desc:'Submit a request for a meeting',
-  //     to:{ name:'meetings.worker' },
-  //     icon:'👨‍💻'
-  //   })
-  // }
 
   // для ADMIN
   if (user.value?.role === 'ADMIN') {
@@ -279,7 +290,16 @@ const actions = computed(() => {
   return base
 })
 
-function go(to:any){ if (to?.name) router.push(to) }
+function go(to:any) {
+  if (!to?.name) return
+
+  if (to.name === 'meetings.mine' && user.value?.name) {
+    goMineMeets(user.value.name)
+  } else {
+    router.push(to)
+  }
+}
+
 </script>
 
 <template>
@@ -305,12 +325,8 @@ function go(to:any){ if (to?.name) router.push(to) }
 
       <div class="header-actions">
         <button v-if="user" class="btn ghost" @click="router.push({ name: 'report' })">Report Problem</button>
-        <button v-if="user" class="btn ghost" @click="router.push({ name: 'chat', query: {senderName: user.name} })">Chat</button>
-        <button
-            v-if="user"
-            class="btn ghost"
-            @click="router.push({ name: 'profile', query: {fullName: user.name } })">Profile
-        </button>
+        <button v-if="user" class="btn ghost" @click="goChat(user.name)">Chat</button>
+        <button v-if="user" class="btn ghost" @click="goProfile(user.name)">Profile</button>
         <button v-if="user" class="btn danger" @click="logout">Logout</button>
         <button v-if="!user && !showLogin" class="btn" @click="showLogin = true; showRegistration = false">Sign In</button>
         <button v-if="!user && !showRegistration" class="btn" @click="showRegistration = true; showLogin = false">Register</button>
@@ -707,4 +723,3 @@ input:-webkit-autofill:focus {
 
 
 </style>
-

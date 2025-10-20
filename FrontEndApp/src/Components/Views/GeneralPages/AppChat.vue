@@ -3,6 +3,11 @@ import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import SockJS from 'sockjs-client';
 import { Client, Frame } from '@stomp/stompjs';
+import CryptoJS from 'crypto-js'
+
+
+const SECRET_KEY = 'MASHONOCKA'
+
 
 type ChatMessageDTO = {
   content: string;
@@ -30,8 +35,11 @@ watch(
     () => route.query.senderName,
     (newVal) => {
       if (typeof newVal === 'string' && newVal.trim() !== '') {
-        senderName.value = newVal;
-        console.log('Updated senderName from route:', newVal);
+        const decrypted = decryptName(newVal)
+        if (decrypted) {
+          senderName.value = decrypted
+          console.log('🔓 Decrypted senderName:', decrypted)
+        }
       }
     },
     { immediate: true }
@@ -72,6 +80,15 @@ async function loadStatuses() {
   }
 }
 
+function decryptName(encrypted: string): string | null {
+  try {
+    const bytes = CryptoJS.AES.decrypt(decodeURIComponent(encrypted), SECRET_KEY)
+    return bytes.toString(CryptoJS.enc.Utf8)
+  } catch (e) {
+    console.error('Decryption failed:', e)
+    return null
+  }
+}
 
 function scrollMessagesToBottom(smooth = true) {
   nextTick(() => {
@@ -167,18 +184,22 @@ function formatTime(iso?: string) {
 }
 
 onMounted(async () => {
-  await nextTick();
+  await nextTick()
 
-  const currentName = route.query.senderName;
+  const currentName = route.query.senderName
   if (typeof currentName === 'string' && currentName.trim() !== '') {
-    senderName.value = currentName;
-    console.log('Initialized senderName:', senderName.value);
+    const decrypted = decryptName(currentName)
+    if (decrypted) {
+      senderName.value = decrypted
+      console.log('🔓 Initialized senderName:', senderName.value)
+    }
   }
 
-  connect();
-  loadStatuses();
-  statusTimer = setInterval(loadStatuses, 5000);
-});
+  connect()
+  loadStatuses()
+  statusTimer = setInterval(loadStatuses, 5000)
+})
+
 onUnmounted(() => {
   disconnect();
   if (statusTimer) {

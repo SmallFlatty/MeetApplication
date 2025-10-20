@@ -38,5 +38,5 @@ public interface MeetRepository extends JpaRepository<MeetEntity, Long> {
     List<Long> getAllMeetsIdsForWorker(@Param("userId")  long userId);
 
     @Query("SELECT u FROM MeetEntity u WHERE u.user.id = :userId ")
-    List<Object []> getMeetsForPerson(@Param("userId")long userId);
+    List<MeetEntity> getMeetsForPerson(@Param("userId")long userId);
 }
