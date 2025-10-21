@@ -24,4 +24,4 @@ Rostik -
     Created_At TIMESTAMP,
     Ends_At TIMESTAMP
     Existed_Users VARCHAR(200)
-  )
+  ) ffff
