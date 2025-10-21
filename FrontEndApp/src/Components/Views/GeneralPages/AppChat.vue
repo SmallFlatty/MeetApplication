@@ -133,6 +133,7 @@ function connect() {
   stompClient.activate();
 }
 
+
 function disconnect() {
   try {
     subscription?.unsubscribe();
@@ -146,59 +147,110 @@ function disconnect() {
   }
   connected.value = false;
 }
+async function loadHistory() {
+  try {
+    const res = await fetch('http://localhost:8080/api/chat/get-all-messages');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
 
-function sendMessage() {
+    const data = await res.json();
+    messages.value = data.map((m: any) => ({
+      content: m.message,
+      senderName: m.senderName,
+      time: m.sentAt
+    }));
+
+    scrollMessagesToBottom(false);
+    console.log('💾 Loaded history:', messages.value.length, 'messages');
+  } catch (e) {
+    console.error('❌ Failed to load chat history:', e);
+  }
+}
+
+async function sendMessage() {
   const msg = text.value.trim();
   if (!msg || !stompClient || !connected.value) return;
 
-  // гарантовано оновлюємо перед надсиланням
   const activeName =
       (typeof route.query.senderName === 'string' && route.query.senderName.trim() !== '')
           ? route.query.senderName
           : senderName.value || 'Anonymous';
 
-  console.log('👉 sending as', activeName);
+  const decryptedName = decryptName(activeName) ?? 'Anonymous';
 
   const payload: ChatMessageDTO = {
     content: msg,
-    senderName: activeName,
+    senderName: decryptedName,
     time: ''
   };
 
   try {
+    // 📡 Надсилаємо через WebSocket
     stompClient.publish({
       destination: '/app/chat.send',
       body: JSON.stringify(payload)
     });
+
+    // 💾 Одночасно зберігаємо у базу
+    await fetch('http://localhost:8080/api/chat/save-message', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        senderName: decryptedName,
+        message: msg
+      })
+    });
+
     text.value = '';
   } catch (e) {
-    console.error('Failed to publish message', e)
+    console.error('Failed to send message', e);
   }
 }
+
 
 
 function formatTime(iso?: string) {
   if (!iso) return '';
   const d = new Date(iso);
-  return isNaN(d.getTime()) ? iso : d.toLocaleTimeString();
+  const now = new Date();
+
+  const isToday = d.toDateString() === now.toDateString();
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+
+  if (isToday)
+    return 'сьогодні ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (d.toDateString() === yesterday.toDateString())
+    return 'вчора ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  return (
+      d.getDate().toString().padStart(2, '0') +
+      '.' +
+      (d.getMonth() + 1).toString().padStart(2, '0') +
+      ' ' +
+      d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  );
 }
 
-onMounted(async () => {
-  await nextTick()
 
-  const currentName = route.query.senderName
+onMounted(async () => {
+  await nextTick();
+
+  const currentName = route.query.senderName;
   if (typeof currentName === 'string' && currentName.trim() !== '') {
-    const decrypted = decryptName(currentName)
+    const decrypted = decryptName(currentName);
     if (decrypted) {
-      senderName.value = decrypted
-      console.log('🔓 Initialized senderName:', senderName.value)
+      senderName.value = decrypted;
+      console.log('🔓 Initialized senderName:', senderName.value);
     }
   }
 
-  connect()
-  loadStatuses()
-  statusTimer = setInterval(loadStatuses, 5000)
-})
+  await loadHistory();
+
+  connect();
+  loadStatuses();
+  statusTimer = setInterval(loadStatuses, 5000);
+});
+
 
 onUnmounted(() => {
   disconnect();
