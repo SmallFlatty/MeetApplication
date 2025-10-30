@@ -140,4 +140,19 @@ public class UserController  {
         session.removeAttribute("userId");
         return ResponseEntity.ok("logged out");
     }
+
+    @PutMapping("/change-name")
+    public void changeName(@RequestParam String oldName, @RequestParam String newName) {
+        userService.changeName(oldName, newName);
+    }
+
+    @PutMapping("/change-email")
+    public void changeEmail(@RequestParam String name, @RequestParam String newEmail) {
+        userService.changeEmail(name , newEmail);
+    }
+
+    @PutMapping("/cahnge-password")
+    public void changePassword(@RequestParam String name, @RequestParam String newPassword) {
+        userService.changePassword(name, newPassword);
+    }
 }

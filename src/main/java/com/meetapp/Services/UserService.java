@@ -28,4 +28,10 @@ public interface UserService {
 
     boolean emailExists(String email);
 
+    void changeName(String oldName ,  String newName);
+
+    void changePassword(String Name, String newPassword);
+
+    void changeEmail(String Name, String newEmail);
+
 }

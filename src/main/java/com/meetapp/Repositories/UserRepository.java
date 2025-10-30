@@ -1,7 +1,9 @@
 package com.meetapp.Repositories;
 
 import com.meetapp.Model.UserEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -43,4 +45,19 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query("SELECT CASE WHEN COUNT(u) > 0 THEN TRUE ELSE FALSE END " +
             "FROM UserEntity u WHERE u.email = :email")
     boolean getUserByEmail(@Param("email") String email);
+
+    @Modifying
+//    @Transactional
+    @Query("UPDATE UserEntity u SET u.fullName = :newName WHERE u.fullName = :oldName")
+    void changeName (@Param("oldName")  String oldName, @Param("newName") String newName);
+
+    @Modifying
+//    @Transactional
+    @Query("UPDATE UserEntity u SET u.email = :newEmail WHERE u.fullName = :fullName")
+    void changeEmail(@Param("fullName") String fullName, @Param("newEmail") String newEmail);
+
+    @Modifying
+//    @Transactional
+    @Query("UPDATE UserEntity u SET u.password = :newPassword WHERE u.fullName = :name")
+    void changePassword(@Param("name")  String name, @Param("newPassword") String newPassword);
 }

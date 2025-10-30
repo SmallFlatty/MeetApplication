@@ -101,4 +101,21 @@ public class UserServiceJPA implements UserService {
         return userRepository.getUserByEmail(email);
     }
 
+    @Override
+    public void changeName(String oldName, String newName) {
+        userRepository.changeName(oldName, newName);
+    }
+
+    @Override
+    public void changePassword(String Name, String newPassword) {
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        userRepository.changePassword(Name, encodedPassword);
+
+    }
+
+    @Override
+    public void changeEmail(String Name, String newEmail) {
+        userRepository.changeEmail(Name, newEmail);
+    }
+
 }

@@ -274,14 +274,14 @@ const actions = computed(() => {
         key:'register-person',
         label:'Register new person',
         desc:'Add a new user to the system',
-        to:{ name:'users.register' },
+        to:{ name:'user.register' },
         icon:'🆕'
       },
       {
         key:'create-meeting-for-worker',
         label:'Create Meet for a Worker',
         desc:'Schedule a meeting on behalf of a worker',
-        to:{ name:'meetings.createForWorker' },
+        to:{ name:'meetings.create.worker' },
         icon:'🛠️'
       }
     ]

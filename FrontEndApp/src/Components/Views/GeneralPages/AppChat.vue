@@ -154,9 +154,9 @@ async function loadHistory() {
 
     const data = await res.json();
     messages.value = data.map((m: any) => ({
-      content: m.message,
       senderName: m.senderName,
-      time: m.sentAt
+      content: m.context,
+      time: m.sendTime
     }));
 
     scrollMessagesToBottom(false);

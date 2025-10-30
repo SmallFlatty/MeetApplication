@@ -8,7 +8,7 @@ import java.util.Base64;
 
 public class VerificationNameService {
 
-    private static final String SECRET_KEY = "MASHONKA"; // має збігатися з фронтендом
+    private static final String SECRET_KEY = "MASHONKA";
 
     public static boolean verifySignedName(String signed) {
         try {
