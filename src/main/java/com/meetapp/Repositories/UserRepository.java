@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -46,17 +47,17 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     boolean getUserByEmail(@Param("email") String email);
 
     @Modifying
-//    @Transactional
+    @Transactional
     @Query("UPDATE UserEntity u SET u.fullName = :newName WHERE u.fullName = :oldName")
     void changeName (@Param("oldName")  String oldName, @Param("newName") String newName);
 
     @Modifying
-//    @Transactional
+    @Transactional
     @Query("UPDATE UserEntity u SET u.email = :newEmail WHERE u.fullName = :fullName")
     void changeEmail(@Param("fullName") String fullName, @Param("newEmail") String newEmail);
 
     @Modifying
-//    @Transactional
+    @Transactional
     @Query("UPDATE UserEntity u SET u.password = :newPassword WHERE u.fullName = :name")
     void changePassword(@Param("name")  String name, @Param("newPassword") String newPassword);
 }
