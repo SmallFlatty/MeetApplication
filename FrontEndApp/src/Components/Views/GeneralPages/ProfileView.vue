@@ -36,7 +36,8 @@ onMounted(() => {
       .then(res => res.json())
       .then(data => {
         user.value = data
-        avatarUrl.value = `http://localhost:8080/UsersAvatar/${user.value.fullName}.png?${Date.now()}`
+        avatarUrl.value = `http://localhost:8080/UsersAvatar/${user.value.fullName.replaceAll(" ","")}.png?${Date.now()}`
+        console.log(user.value.fullName.replaceAll(" ",""))
       })
       .catch(err => console.error('Failed to fetch user info:', err))
 })
@@ -61,7 +62,7 @@ async function uploadAvatar() {
       credentials: 'include'
     })
     if (res.ok) {
-      avatarUrl.value = `${API.replace('/api/user','')}/UsersAvatar/${user.value.fullName}.png?${Date.now()}`
+      avatarUrl.value = `${API.replace('/api/user','')}/UsersAvatar/${user.value.fullName.replaceAll(" ","")}.png?${Date.now()}`
       alert('✅ Avatar updated!')
     } else alert('❌ Upload failed')
   } catch (e) {

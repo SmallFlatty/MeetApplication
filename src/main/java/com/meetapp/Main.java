@@ -12,22 +12,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @SpringBootApplication
 public class Main implements CommandLineRunner {
 
-    private final ApplicationContext applicationContext;
-
-    public Main(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
     }
 
-
     @Override
-    public void run(String... args) {
-//        ConsoleUI ui = applicationContext.getBean(ConsoleUI.class);
-//        ui.start();
-    }
+    public void run(String... args) {}
 
     @Bean
     public PasswordEncoder passwordEncoder(){

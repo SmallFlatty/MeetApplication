@@ -273,7 +273,6 @@ async function registerUser() {
   }
 }
 
-/* 🌙 Фон/інпут дефолт */
 body, html, .page {
   background-color: #0e0b18 !important;
   background-image: none !important;

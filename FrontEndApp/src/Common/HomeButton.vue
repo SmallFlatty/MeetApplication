@@ -10,7 +10,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 function goHome() {
-  router.push({ name: 'home' }) // всегда возвращает на главную страницу
+  router.push({ name: 'home' })
 }
 </script>
 

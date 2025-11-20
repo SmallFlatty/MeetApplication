@@ -24,7 +24,6 @@ public class UserController  {
         this.userService = userService;
         this.userStatusService = userStatusService;
     }
-
     @PostMapping("/create-user")
     public ResponseEntity<?> createUser(@RequestParam String email, @RequestParam String password, @RequestParam String fullName, @RequestParam String role){
         if (fullName.isEmpty() || password.isEmpty() || email.isEmpty() || role.isEmpty()) {
@@ -81,9 +80,9 @@ public class UserController  {
     @PostMapping("/upload-avatar")
     public ResponseEntity<?> uploadUserAvatar(@RequestParam("file") MultipartFile file, @RequestParam String fullName) {
         try {
-            String ext = FilenameUtils.getExtension(file.getOriginalFilename());
+            //String ext = FilenameUtils.getExtension(file.getOriginalFilename());
             String folderPath = new File("UsersAvatar").getAbsolutePath();
-            String avatarPath = folderPath + File.separator + fullName + "." + ext;
+            String avatarPath = folderPath + File.separator + fullName.replaceAll(" ","") + "." + "png";
 
             File oldFile = new File(avatarPath);
             if (oldFile.exists()) {
