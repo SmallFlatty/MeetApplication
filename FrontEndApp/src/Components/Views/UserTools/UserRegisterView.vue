@@ -37,7 +37,11 @@ async function registerUser() {
       method: 'POST'
     })
 
-    if (res.ok) {
+    const statusRes = await fetch(
+        `http://localhost:8080/api/status/create-status?fullName=${encodeURIComponent(fullName.value)}`,
+        { method: 'POST' }
+    )
+    if (res.ok && statusRes.ok) {
       message.value = '✅ Користувача створено успішно'
       email.value = ''
       password.value = ''
