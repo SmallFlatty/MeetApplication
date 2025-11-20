@@ -13,6 +13,13 @@ const selectedFile = ref<File | null>(null)
 
 const SECRET_KEY = 'MASHONOCKA'
 
+const showNameModal = ref(false)
+const showEmailModal = ref(false)
+const showPasswordModal = ref(false)
+const newName = ref('')
+const newEmail = ref('')
+const newPassword = ref('')
+
 function decryptName(encrypted: string): string | null {
   try {
     const bytes = CryptoJS.AES.decrypt(decodeURIComponent(encrypted), SECRET_KEY)
@@ -70,26 +77,41 @@ async function uploadAvatar() {
   }
 }
 
+function openNameModal() {
+  newName.value = user.value?.fullName || ''
+  showNameModal.value = true
+}
+
+function openEmailModal() {
+  newEmail.value = user.value?.email || ''
+  showEmailModal.value = true
+}
+
+function openPasswordModal() {
+  newPassword.value = ''
+  showPasswordModal.value = true
+}
+
 async function changeName() {
-  const newName = prompt('Enter new full name:')
-  if (!newName || !user.value) return
-  await fetch(`${API}/change-name?oldName=${encodeURIComponent(user.value.fullName)}&newName=${encodeURIComponent(newName)}`, { method: 'PUT' })
+  if (!newName.value || !user.value) return
+  await fetch(`${API}/change-name?oldName=${encodeURIComponent(user.value.fullName)}&newName=${encodeURIComponent(newName.value)}`, { method: 'PUT' })
+  showNameModal.value = false
   alert('✅ Name changed successfully!')
   location.reload()
 }
 
 async function changeEmail() {
-  const newEmail = prompt('Enter new email:')
-  if (!newEmail || !user.value) return
-  await fetch(`${API}/change-email?name=${encodeURIComponent(user.value.fullName)}&newEmail=${encodeURIComponent(newEmail)}`, { method: 'PUT' })
+  if (!newEmail.value || !user.value) return
+  await fetch(`${API}/change-email?name=${encodeURIComponent(user.value.fullName)}&newEmail=${encodeURIComponent(newEmail.value)}`, { method: 'PUT' })
+  showEmailModal.value = false
   alert('✅ Email changed successfully!')
   location.reload()
 }
 
 async function changePassword() {
-  const newPassword = prompt('Enter new password:')
-  if (!newPassword || !user.value) return
-  await fetch(`${API}/cahnge-password?name=${encodeURIComponent(user.value.fullName)}&newPassword=${encodeURIComponent(newPassword)}`, { method: 'PUT' })
+  if (!newPassword.value || !user.value) return
+  await fetch(`${API}/cahnge-password?name=${encodeURIComponent(user.value.fullName)}&newPassword=${encodeURIComponent(newPassword.value)}`, { method: 'PUT' })
+  showPasswordModal.value = false
   alert('✅ Password changed successfully!')
 }
 </script>
@@ -108,21 +130,21 @@ async function changePassword() {
       <div class="info-group">
         <p><strong>Email:</strong> {{ user.email }}</p>
         <div class="buttons-inline">
-          <button class="btn small" @click="changeEmail">✉️ Change Email</button>
+          <button class="btn small" @click="openEmailModal">✉️ Change Email</button>
         </div>
       </div>
 
       <div class="info-group">
         <p><strong>Full Name:</strong> {{ user.fullName }}</p>
         <div class="buttons-inline">
-          <button class="btn small" @click="changeName">📝 Change Name</button>
+          <button class="btn small" @click="openNameModal">📝 Change Name</button>
         </div>
       </div>
 
       <div class="info-group">
         <p><strong>Password:</strong> ••••••••</p>
         <div class="buttons-inline">
-          <button class="btn small danger" @click="changePassword">🔒 Change Password</button>
+          <button class="btn small danger" @click="openPasswordModal">🔒 Change Password</button>
         </div>
       </div>
 
@@ -142,6 +164,42 @@ async function changePassword() {
     </div>
 
     <p v-else>Loading user info...</p>
+
+    <!-- Modal for Name Change -->
+    <div v-if="showNameModal" class="modal-overlay" @click="showNameModal = false">
+      <div class="modal-content" @click.stop>
+        <h3>📝 Change Full Name</h3>
+        <input v-model="newName" type="text" placeholder="Enter new full name" class="modal-input" />
+        <div class="modal-buttons">
+          <button class="btn" @click="changeName">Save</button>
+          <button class="btn back" @click="showNameModal = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for Email Change -->
+    <div v-if="showEmailModal" class="modal-overlay" @click="showEmailModal = false">
+      <div class="modal-content" @click.stop>
+        <h3>✉️ Change Email</h3>
+        <input v-model="newEmail" type="email" placeholder="Enter new email" class="modal-input" />
+        <div class="modal-buttons">
+          <button class="btn" @click="changeEmail">Save</button>
+          <button class="btn back" @click="showEmailModal = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for Password Change -->
+    <div v-if="showPasswordModal" class="modal-overlay" @click="showPasswordModal = false">
+      <div class="modal-content" @click.stop>
+        <h3>🔒 Change Password</h3>
+        <input v-model="newPassword" type="password" placeholder="Enter new password" class="modal-input" />
+        <div class="modal-buttons">
+          <button class="btn" @click="changePassword">Save</button>
+          <button class="btn back" @click="showPasswordModal = false">Cancel</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -263,4 +321,72 @@ hr {
   margin-top: 1rem;
 }
 
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: linear-gradient(180deg, #1d1733, #161025);
+  border: 1px solid #352a58;
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.modal-content h3 {
+  font-size: 1.4rem;
+  margin-bottom: 1.2rem;
+  background: linear-gradient(to right, #bba1ff, #9f7fff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 14px 18px;
+  margin-bottom: 1.2rem;
+  border: 1px solid #352a58;
+  border-radius: 12px;
+  background: #0d0817;
+  color: #f4f0ff;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  transition: border 0.2s ease;
+  box-sizing: border-box;
+}
+
+.modal-input:focus {
+  border-color: #7a4fe0;
+  box-shadow: 0 0 8px rgba(122, 79, 224, 0.4);
+}
+
+.modal-input::placeholder {
+  color: #7a7a7a;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.modal-buttons .btn {
+  flex: 1;
+  max-width: 150px;
+}
 </style>
