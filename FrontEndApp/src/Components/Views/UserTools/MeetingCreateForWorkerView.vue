@@ -6,21 +6,19 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-// ⚙️ Форма
 const title = ref("");
 const startAt = ref("");
 const endAt = ref("");
 const customerName = ref("");
-const createdBy = ref(""); // обов'язкове поле
+const createdBy = ref("");
 const createdAt = ref(new Date().toISOString().slice(0, 16));
 const userId = ref("");
 
-// 📡 Дані користувачів
 const users = ref<any[]>([]);
 const loadingUsers = ref(true);
 const message = ref("");
 
-// 🚀 Завантаження користувачів
+
 async function loadUsers() {
   try {
     const res = await axios.get("http://localhost:8080/api/user/get-users");
@@ -32,7 +30,6 @@ async function loadUsers() {
   }
 }
 
-// 📤 Створення зустрічі
 async function createMeeting() {
   if (!createdBy.value) {
     message.value = "⚠️ 'Created By' is required.";
@@ -56,7 +53,6 @@ async function createMeeting() {
   try {
     await axios.post("http://localhost:8080/api/meets/create", payload);
     message.value = "✅ Meeting successfully created!";
-    // Очистити форму
     title.value = "";
     startAt.value = "";
     endAt.value = "";
@@ -87,7 +83,6 @@ onMounted(loadUsers);
     </header>
 
     <div class="content">
-      <!-- 🧾 Форма -->
       <form class="registration" @submit.prevent="createMeeting">
         <h2 class="reg-title">Meeting details</h2>
 
@@ -113,7 +108,6 @@ onMounted(loadUsers);
         <p v-if="message" style="text-align:center; margin-top:10px;">{{ message }}</p>
       </form>
 
-      <!-- 👥 Таблиця користувачів -->
       <div class="user-table">
         <h2 class="reg-title">Available Users</h2>
         <div v-if="loadingUsers">Loading users...</div>
@@ -141,7 +135,6 @@ onMounted(loadUsers);
 </template>
 
 <style scoped>
-/* Використано твої базові стилі */
 
 .content {
   display: flex;
@@ -149,7 +142,6 @@ onMounted(loadUsers);
   align-items: flex-start;
 }
 
-/* Таблиця користувачів */
 .user-table {
   flex: 1;
   background: var(--panel);

@@ -112,43 +112,6 @@ async function signIn() {
   }
 }// Stats Works
 
-// async function register() {
-//   try{
-//     const registerRes = await fetch(`${API}/create-user`, {
-//       method: 'POST',
-//       credentials: 'include',
-//       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-//       body: new URLSearchParams({
-//         email: email.value,
-//         password: password.value,
-//         fullName: fullName.value,
-//         role: selectedRole.value
-//       })
-//     })
-//
-//     if (!registerRes.ok) {
-//       try {
-//         const errorText = await registerRes.text() // пытаемся прочитать тело как текст
-//         registerError.value = errorText?.trim()
-//             ? errorText // если сервер прислал сообщение, используем его
-//             : 'Something went wrong' // иначе fallback
-//       } catch (e) {
-//         registerError.value = 'Something went wrong' // если чтение тела сломалось
-//       }
-//       return
-//     }
-//
-//     showLogin.value = true
-//     showRegistration.value = false
-//
-//     registerInfo.value = "Your account has been created successfully. Now please login"
-//   }
-//   catch (error) {
-//     console.error(error)
-//     registerError.value = 'Register failed. Check API/CORS/network.'
-//   }
-// }
-
 async function register() {
   try {
     // Create User
@@ -187,12 +150,10 @@ async function register() {
     });
 
     if (!statusRes.ok) {
-      // не блокуємо логін, просто лог/підказка
       console.warn('⚠️ User created, but failed to create status',
           statusRes.status, await statusRes.text().catch(() => ''));
     }
 
-    // 🟢 3. Показуємо повідомлення
     showLogin.value = true;
     showRegistration.value = false;
     registerInfo.value = "Your account has been created successfully. Now please login";
@@ -256,7 +217,7 @@ async function checkSession() {
   } catch (err) {
     console.warn('Session check failed')
   }
-} //Maybe work, idn how to check it
+}
 
 const actions = computed(() => {
   const base = [
@@ -264,7 +225,7 @@ const actions = computed(() => {
     { key:'create-meeting', label:'Create Meeting', desc:'Schedule a new meeting', to:{ name:'meetings.create' }, icon:'➕' },
   ]
 
-  // для ADMIN
+  // ADMIN
   if (user.value?.role === 'ADMIN') {
     return [
       ...base,
@@ -305,7 +266,6 @@ function go(to:any) {
 <template>
   <div class="page">
     <header class="header">
-      <!-- LEFT: user card -->
       <div class="title-wrap">
         <div v-if="user" class="user-card">
           <div class="user-card__icon">👋</div>
@@ -333,9 +293,6 @@ function go(to:any) {
       </div>
     </header>
 
-
-
-    <!-- Login panel -->
     <div v-if="!user && showLogin" class="login">
       <h2 class="login-title">Sign In</h2>
       <input v-model="email" placeholder="Email" autocomplete="email" />
@@ -348,7 +305,6 @@ function go(to:any) {
       <p v-if="registerInfo" class="error">{{ registerInfo }}</p>
     </div>
 
-    <!-- Register panel -->
     <div v-if="!user && showRegistration" class="registration">
       <h2 class="reg-title">Create account</h2>
       <input v-model="fullName" placeholder="Full name" autocomplete="username" />
@@ -367,7 +323,6 @@ function go(to:any) {
       <p v-if="registerError" class="error">{{ registerError }}</p>
     </div>
 
-    <!-- Role-aware actions -->
     <section v-if="user" class="grid">
       <article v-for="item in actions" :key="item.key" class="card" @click="go(item.to)">
         <div class="icon">{{ item.icon }}</div>
@@ -398,7 +353,6 @@ function go(to:any) {
   --ring: rgba(160, 100, 255, 0.35);
 }
 
-/* Фон сторінки */
 .page {
   min-height: 100vh;
   display: flex;
@@ -412,12 +366,11 @@ function go(to:any) {
       linear-gradient(180deg, var(--bg-2), var(--bg-1));
 }
 
-/* Шапка */
 .header{
-  position: relative;           /* нове */
+  position: relative;
   display:flex; align-items:center; justify-content:space-between;
   gap:16px;
-  min-height: 96px;             /* щоб хедер не “стрибав” по висоті */
+  min-height: 96px;
 }
 .title {
   margin: 0;
@@ -444,7 +397,6 @@ function go(to:any) {
   gap: 10px;
 }
 
-/* Кнопки */
 .btn {
   border: none;
   color: white;
@@ -478,12 +430,11 @@ function go(to:any) {
   cursor: not-allowed;
 }
 
-/* Логін */
 .login {
   display: flex;
-  flex-direction: column; /* поля идут в столбик */
-  gap: 12px;              /* расстояние между элементами */
-  align-items: center;   /* все элементы по ширине контейнера */
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
   max-width: 320px;
   margin: 0 auto;
 }
@@ -516,7 +467,6 @@ function go(to:any) {
   color: #cfc8ea88;
 }
 
-/* Реєстрація */
 .registration {
   display: flex;
   flex-direction: column;
@@ -568,7 +518,7 @@ function go(to:any) {
   background-color: #231b3f;
   color: var(--text);
   font-size: 1rem;
-  appearance: none; /* убирает стандартную стрелку браузера */
+  appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%23cfc8ea' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
@@ -593,7 +543,6 @@ function go(to:any) {
   font-weight: 500;
 }
 
-/* Сітка */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -702,17 +651,15 @@ input:-webkit-autofill:focus {
 }
 
 .logo-bar{
-  position:absolute;            /* нове */
+  position:absolute;
   left:50%; top:50%;
   transform: translate(-50%, -50%);
   display:flex; align-items:center; justify-content:center;
-  pointer-events:none;          /* щоб не перекривало клікабельні елементи */
-  z-index:0;                    /* під кнопками/юзером, якщо треба */
+  pointer-events:none;
+  z-index:0;
 }
-
-/* Лого 2× (було 54px) */
 .logo-img{
-  height:108px;                 /* 2 рази більше */
+  height:108px;
   max-width: 70vw;
   object-fit: contain;
   filter: drop-shadow(0 10px 22px rgba(160,100,255,.28));

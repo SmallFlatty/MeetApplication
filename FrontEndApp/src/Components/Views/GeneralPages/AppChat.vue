@@ -15,7 +15,6 @@ type ChatMessageDTO = {
   time?: string;
 };
 
-// --- props + route
 const props = defineProps<{
   senderName?: string;
   wsUrl?: string;
@@ -27,10 +26,8 @@ function goBack() {
   router.back();
 }
 
-// --- senderName
 const senderName = ref(props.senderName || 'Anonymous');
 
-// 👇 ось це ключова частина
 watch(
     () => route.query.senderName,
     (newVal) => {
@@ -45,10 +42,8 @@ watch(
     { immediate: true }
 );
 
-// --- websocket URL
 const wsUrl = props.wsUrl ?? (import.meta.env.VITE_WS_URL ?? 'http://localhost:8080/wb');
 
-// --- connection state
 const connected = ref(false);
 const messages = ref<ChatMessageDTO[]>([]);
 const text = ref('');
@@ -65,10 +60,10 @@ let statusTimer: ReturnType<typeof setInterval> | null = null;
 async function loadStatuses() {
   try {
     const res = await fetch('http://localhost:8080/api/status/users-status', {
-      credentials: 'include' // якщо сесія на куках
+      credentials: 'include'
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const rows = await res.json(); // очікуємо: [ [fullName, status], ... ]
+    const rows = await res.json();
     userStatuses.value = Array.isArray(rows)
         ? rows.map((r: any) => ({
           fullName: String(r?.[0] ?? ''),
@@ -206,8 +201,6 @@ async function sendMessage() {
   }
 }
 
-
-
 function formatTime(iso?: string) {
   if (!iso) return '';
   const d = new Date(iso);
@@ -266,13 +259,9 @@ onUnmounted(() => {
     <div class="topbar">
       <button class="btn btn-back" @click="goBack">← Back</button>
       <h1 class="page-title"></h1>
-<!--      <div class="status-chip" :class="{ online: connected }">-->
-<!--        {{ connected ? 'online' : 'offline' }}-->
-<!--      </div>-->
     </div>
 
     <div class="content-grid">
-      <!-- Left: main chat (2/3) -->
       <main class="left-col">
         <div class="chat-wrapper">
           <div class="messages" role="log" aria-live="polite">
@@ -297,7 +286,6 @@ onUnmounted(() => {
         </div>
       </main>
 
-      <!-- Right: online users / future content (1/3) -->
       <aside class="right-col">
         <div class="panel">
           <h3 class="panel-title">Team status</h3>

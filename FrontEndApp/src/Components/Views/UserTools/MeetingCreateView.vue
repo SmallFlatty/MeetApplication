@@ -4,22 +4,20 @@ import axios from "axios";
 import { useRouter } from "vue-router";
 import HomeButton from "@/Common/HomeButton.vue";
 
-// Router
 const router = useRouter();
 
-// 🧠 Поля форми
 const title = ref("");
 const startAt = ref("");
 const endAt = ref("");
 const customerName = ref("");
 const createdBy = ref("");
-const createdAt = ref(new Date().toISOString().slice(0, 16)); // поточна дата/час
-const userId = ref(""); // ID користувача, якому створюється зустріч
+const createdAt = ref(new Date().toISOString().slice(0, 16));
+const userId = ref("");
 
 const loading = ref(false);
 const message = ref("");
 
-// 🛰️ Надсилання на бекенд
+
 async function createMeeting() {
   if (!title.value || !startAt.value || !endAt.value || !customerName.value || !userId.value) {
     message.value = "⚠️ Please fill all required fields.";
@@ -43,8 +41,6 @@ async function createMeeting() {
     const res = await axios.post("http://localhost:8080/api/meets/create", payload);
     message.value = `✅ Meeting '${res.data.title}' created successfully.`;
 
-    // Можеш перекинути користувача назад
-    // router.push({ name: 'home' })
   } catch (err) {
     console.error(err);
     message.value = "❌ Failed to create meeting. Check console for details.";
@@ -107,7 +103,6 @@ function goHome() {
   --ring: rgba(160, 100, 255, 0.35);
 }
 
-/* 🌌 Основний фон сторінки */
 .page {
   min-height: 100vh;
   display: flex;
@@ -121,7 +116,6 @@ function goHome() {
       linear-gradient(180deg, var(--bg-2), var(--bg-1));
 }
 
-/* 🧭 Хедер */
 .header {
   position: relative;
   display: flex;
@@ -145,7 +139,6 @@ function goHome() {
   gap: 10px;
 }
 
-/* 🧩 Кнопки */
 .btn {
   border: none;
   color: white;
@@ -178,7 +171,6 @@ function goHome() {
   cursor: not-allowed;
 }
 
-/* 🧾 Форма реєстрації */
 .registration {
   display: flex;
   flex-direction: column;
@@ -201,7 +193,6 @@ function goHome() {
   margin-bottom: 10px;
 }
 
-/* 🔤 Поля вводу */
 .registration input {
   height: 20px;
   padding: 12px 14px;
@@ -221,7 +212,6 @@ function goHome() {
   color: #cfc8ea88;
 }
 
-/* 🎭 Select для ролі */
 .role-label {
   color: #cfc8ea;
   font-weight: 500;
@@ -253,14 +243,12 @@ function goHome() {
   box-shadow: 0 0 0 3px var(--ring);
 }
 
-/* 🔘 Кнопки внизу */
 .reg-buttons {
   display: flex;
   justify-content: space-between;
   margin-top: 16px;
 }
 
-/* 📱 Адаптив */
 @media (max-width: 900px) {
   .registration {
     padding: 24px;
@@ -271,7 +259,6 @@ function goHome() {
   }
 }
 
-/* 🌙 Фон/інпут дефолт */
 body, html, .page {
   background-color: #0e0b18 !important;
   background-image: none !important;

@@ -3,7 +3,6 @@ import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import CryptoJS from 'crypto-js'
 
-/** 🔑 Конфіг **/
 const SECRET_KEY = 'MASHONOCKA'
 const API_USER = 'http://localhost:8080/api/user/get-id'
 const API_MEETS = 'http://localhost:8080/api/meets'
@@ -13,7 +12,6 @@ const route = useRoute()
 
 function goBack() { router.back() }
 
-/** 👤 Дешифрування **/
 function decryptName(encrypted: string): string {
   try {
     const bytes = CryptoJS.AES.decrypt(decodeURIComponent(encrypted), SECRET_KEY)
@@ -24,12 +22,10 @@ function decryptName(encrypted: string): string {
   }
 }
 
-/** 📥 Дані користувача **/
 const encryptedName = route.query.senderName as string
 const userName = ref('')
 const userId = ref<number | null>(null)
 
-/** 📅 Календар **/
 const loading = ref(false)
 const error = ref('')
 const meetings = ref<any[]>([])
@@ -51,7 +47,6 @@ function goToday() {
   current.value = new Date(today.getFullYear(), today.getMonth(), 1)
 }
 
-/** 🗓️ Побудова тижнів **/
 const weeks = computed(() => {
   const start = new Date(current.value.getFullYear(), current.value.getMonth(), 1)
   const end = new Date(current.value.getFullYear(), current.value.getMonth() + 1, 0)
@@ -77,7 +72,6 @@ const weeks = computed(() => {
   return w
 })
 
-/** 🔍 Пошук **/
 const filteredMeetings = computed(() => {
   const term = q.value.trim().toLowerCase()
   if (!term) return meetings.value
@@ -87,7 +81,6 @@ const filteredMeetings = computed(() => {
   )
 })
 
-/** 🧭 Ключ дати **/
 function keyFromDate(d: Date) {
   const local = new Date(d)
   local.setHours(0, 0, 0, 0)
@@ -102,7 +95,6 @@ function toDate(isoLike: string) {
   return new Date(isoLike.replace(' ', 'T'))
 }
 
-/** 🗓️ Мапа подій **/
 const eventsByDay = computed(() => {
   const map = new Map<string, any[]>()
   for (const m of filteredMeetings.value) {
@@ -117,12 +109,10 @@ const eventsByDay = computed(() => {
   return map
 })
 
-/** 📋 Деталі **/
 const selected = ref<any | null>(null)
 function openDetails(ev: any) { selected.value = ev }
 function closeDetails() { selected.value = null }
 
-/** 🕓 Формати **/
 function fmtTime(isoLike: string) {
   return toDate(isoLike).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
 }
@@ -132,7 +122,6 @@ function isTodayDate(d: Date) {
       d.getDate() === today.getDate()
 }
 
-/** 📡 API **/
 async function fetchUserIdByName(name: string): Promise<number | null> {
   try {
     const res = await fetch(`${API_USER}?fullName=${encodeURIComponent(name)}`)
@@ -154,13 +143,11 @@ async function fetchMeetingsByUserId(id: number) {
 
     console.log('📦 Raw API response:', data)
 
-    // ✅ Унікалізація через Map
     const unique = new Map<number, any>()
     for (const m of data || []) {
       unique.set(m.id, m)
     }
 
-    // ✅ Тепер маппимо з unique, а не з data!
     meetings.value = Array.from(unique.values()).map(m => ({
       _id: m.id,
       title: m.title || 'Untitled Meeting',
@@ -178,7 +165,7 @@ async function fetchMeetingsByUserId(id: number) {
     loading.value = false
   }
 }
-/** 🚀 Ініціалізація **/
+
 onMounted(async () => {
   console.log('🔐 Encrypted from URL:', route.query.senderName)
   console.log('🔓 Decrypted:', decryptName(route.query.senderName))
@@ -191,7 +178,6 @@ onMounted(async () => {
   }
 })
 
-/** 🔍 Автопрокрутка при пошуку **/
 watch(filteredMeetings, async (newList) => {
   if (!newList.length) return
   const first = newList[0]

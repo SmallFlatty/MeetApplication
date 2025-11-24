@@ -6,7 +6,7 @@ const router = useRouter()
 
 const API = 'http://localhost:8080/api/support'
 const usersProblem = ref('')
-const sent = ref(false) // ✅ стан — чи відправлено
+const sent = ref(false)
 
 async function sendProblem() {
   if (!usersProblem.value.trim()) {
@@ -40,7 +40,6 @@ async function sendProblem() {
     <h1 class="page-title">🛠 Report a Problem</h1>
 
     <div class="card">
-      <!-- ✅ Якщо ще не відправлено -->
       <div v-if="!sent">
   <textarea
       v-model="usersProblem"
@@ -90,7 +89,7 @@ textarea {
 
 .btn {
   display: inline-block;
-  min-width: 120px;   /* однаковий мінімальний розмір */
+  min-width: 120px;
   padding: 0.5rem 1.2rem;
   border-radius: 8px;
   border: none;
@@ -99,7 +98,6 @@ textarea {
   font-size: 1rem;
 }
 
-/* Send — фіолетова */
 .btn-send {
   background-color: #6c5ce7;
   color: white;
@@ -129,7 +127,7 @@ textarea {
 
 .thank-you {
   font-size: 1.2rem;
-  color: #2ecc71; /* зелений акцент */
+  color: #2ecc71;
   font-weight: bold;
 }
 .buttons {

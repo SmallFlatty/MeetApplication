@@ -8,7 +8,6 @@ function goHome() {
   router.push({ name: 'home' })
 }
 
-// ---- Форма ----
 const email = ref('')
 const password = ref('')
 const fullName = ref('')
@@ -16,7 +15,6 @@ const role = ref('USER')
 const loading = ref(false)
 const message = ref('')
 
-// ---- Реєстрація ----
 async function registerUser() {
   if (!email.value || !password.value || !fullName.value || !role.value) {
     message.value = '⚠️ Введіть усі поля'
@@ -113,7 +111,6 @@ async function registerUser() {
   --ring: rgba(160, 100, 255, 0.35);
 }
 
-/* 🌌 Основний фон сторінки */
 .page {
   min-height: 100vh;
   display: flex;
@@ -127,7 +124,6 @@ async function registerUser() {
       linear-gradient(180deg, var(--bg-2), var(--bg-1));
 }
 
-/* 🧭 Хедер */
 .header {
   position: relative;
   display: flex;
@@ -151,7 +147,6 @@ async function registerUser() {
   gap: 10px;
 }
 
-/* 🧩 Кнопки */
 .btn {
   border: none;
   color: white;
@@ -184,7 +179,6 @@ async function registerUser() {
   cursor: not-allowed;
 }
 
-/* 🧾 Форма реєстрації */
 .registration {
   display: flex;
   flex-direction: column;
@@ -207,7 +201,6 @@ async function registerUser() {
   margin-bottom: 10px;
 }
 
-/* 🔤 Поля вводу */
 .registration input {
   height: 20px;
   padding: 12px 14px;
@@ -227,7 +220,6 @@ async function registerUser() {
   color: #cfc8ea88;
 }
 
-/* 🎭 Select для ролі */
 .role-label {
   color: #cfc8ea;
   font-weight: 500;
@@ -259,14 +251,12 @@ async function registerUser() {
   box-shadow: 0 0 0 3px var(--ring);
 }
 
-/* 🔘 Кнопки внизу */
 .reg-buttons {
   display: flex;
   justify-content: space-between;
   margin-top: 16px;
 }
 
-/* 📱 Адаптив */
 @media (max-width: 900px) {
   .registration {
     padding: 24px;

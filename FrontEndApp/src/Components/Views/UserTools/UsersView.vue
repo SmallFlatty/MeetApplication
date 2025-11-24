@@ -33,7 +33,6 @@ async function loadUsers() {
   }
 }
 
-// 🗑 Видалення юзера
 async function deleteUser(userId: number) {
   if (!confirm("Точно видалити цього користувача?")) return
   try {
@@ -46,7 +45,6 @@ async function deleteUser(userId: number) {
     )
     if (!res.ok) throw new Error("❌ Не вдалося видалити")
 
-    // оновити список після видалення
     await loadUsers()
   } catch (err) {
     console.error(err)

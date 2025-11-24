@@ -165,7 +165,6 @@ async function changePassword() {
 
     <p v-else>Loading user info...</p>
 
-    <!-- Modal for Name Change -->
     <div v-if="showNameModal" class="modal-overlay" @click="showNameModal = false">
       <div class="modal-content" @click.stop>
         <h3>📝 Change Full Name</h3>
@@ -177,7 +176,6 @@ async function changePassword() {
       </div>
     </div>
 
-    <!-- Modal for Email Change -->
     <div v-if="showEmailModal" class="modal-overlay" @click="showEmailModal = false">
       <div class="modal-content" @click.stop>
         <h3>✉️ Change Email</h3>
@@ -189,7 +187,6 @@ async function changePassword() {
       </div>
     </div>
 
-    <!-- Modal for Password Change -->
     <div v-if="showPasswordModal" class="modal-overlay" @click="showPasswordModal = false">
       <div class="modal-content" @click.stop>
         <h3>🔒 Change Password</h3>
@@ -322,7 +319,6 @@ hr {
   margin-top: 1rem;
 }
 
-/* Modal Styles */
 .modal-overlay {
   position: fixed;
   top: 0;

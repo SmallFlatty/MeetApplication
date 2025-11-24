@@ -134,17 +134,15 @@ function isTodayDate(d) {
 }
 
 onMounted(fetchMeetings)
-// 🧭 Auto-scroll or move calendar when search result changes
+
 watch(filteredMeetings, async (newList) => {
   if (!newList.length) return
   const first = newList[0]
   if (!first?.startAt) return
 
-  // переключаємо календар на місяць першої знайденої зустрічі
   const startDate = new Date(first.startAt)
   current.value = new Date(startDate.getFullYear(), startDate.getMonth(), 1)
 
-  // дочекайся оновлення DOM і плавно прокрути
   await nextTick()
   const key = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`
   const dayCell = document.querySelector(`[data-date="${key}"]`)
