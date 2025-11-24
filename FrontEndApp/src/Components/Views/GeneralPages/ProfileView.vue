@@ -209,6 +209,7 @@ async function changePassword() {
   max-width: 720px;
   margin: 0 auto;
   color: #f4f0ff;
+  min-height: 100vh;
 }
 
 .profile-card {
@@ -388,5 +389,17 @@ hr {
 .modal-buttons .btn {
   flex: 1;
   max-width: 150px;
+}
+</style>
+
+<style>
+body {
+  background: linear-gradient(180deg, #0d0817, #1a0f2e);
+  min-height: 100vh;
+  margin: 0;
+}
+
+html {
+  background: #0d0817;
 }
 </style>

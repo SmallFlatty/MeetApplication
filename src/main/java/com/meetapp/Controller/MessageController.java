@@ -34,7 +34,7 @@ public class MessageController {
 
         try{
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo("teamly85@gmail.com");
+            message.setTo("rpsuport.help@gmail.com");
             message.setSubject("New problem request");
             message.setText(usersProblem);
 
