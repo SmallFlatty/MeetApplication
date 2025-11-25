@@ -24,6 +24,11 @@ async function sendProblem() {
     if (res.ok) {
       sent.value = true
       usersProblem.value = ''
+
+      setTimeout(() => {
+        router.back()
+      }, 1200)
+
     } else {
       const msg = await res.text()
       alert('Error: ' + msg)
@@ -33,6 +38,7 @@ async function sendProblem() {
     alert('Failed to send problem')
   }
 }
+
 </script>
 
 <template>

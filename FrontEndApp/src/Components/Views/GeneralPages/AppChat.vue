@@ -6,6 +6,7 @@ import { Client, Frame } from '@stomp/stompjs';
 import CryptoJS from 'crypto-js'
 
 
+
 const SECRET_KEY = 'MASHONOCKA'
 
 
@@ -56,6 +57,7 @@ type UserStatus = { fullName: string; status: 'Online' | 'Offline' };
 
 const userStatuses = ref<UserStatus[]>([]);
 let statusTimer: ReturnType<typeof setInterval> | null = null;
+
 
 async function loadStatuses() {
   try {
@@ -179,13 +181,11 @@ async function sendMessage() {
   };
 
   try {
-    // 📡 Надсилаємо через WebSocket
     stompClient.publish({
       destination: '/app/chat.send',
       body: JSON.stringify(payload)
     });
 
-    // 💾 Одночасно зберігаємо у базу
     await fetch('http://localhost:8080/api/chat/save-message', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -201,27 +201,66 @@ async function sendMessage() {
   }
 }
 
-function formatTime(iso?: string) {
+function handleAvatarError(e: Event) {
+  const img = e.target as HTMLImageElement
+  img.style.display = "none"
+  const fallback = img.parentElement?.querySelector(".fallback") as HTMLElement
+  if (fallback) fallback.style.display = "flex"
+}
+
+function formatOnlyTime(iso?: string) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatDate(iso?: string) {
   if (!iso) return '';
   const d = new Date(iso);
   const now = new Date();
 
   const isToday = d.toDateString() === now.toDateString();
+  if (isToday) return "Today";
+
   const yesterday = new Date(now);
   yesterday.setDate(now.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
 
-  if (isToday)
-    return 'сьогодні ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  if (d.toDateString() === yesterday.toDateString())
-    return 'вчора ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleDateString('en-US', { day: 'numeric', month: 'long' }); // e.g. 25 June
+}
 
-  return (
-      d.getDate().toString().padStart(2, '0') +
-      '.' +
-      (d.getMonth() + 1).toString().padStart(2, '0') +
-      ' ' +
-      d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  );
+function shouldShowDate(index: number) {
+  if (index === 0) return true;
+
+  const prev = messages.value[index - 1].time;
+  const curr = messages.value[index].time;
+
+  const prevDate = new Date(prev).toDateString();
+  const currDate = new Date(curr).toDateString();
+
+  return prevDate !== currDate;
+}
+
+function scrollToPickedDate(event: Event) {
+  const input = event.target as HTMLInputElement;
+  if (!input.value) return;
+
+  const picked = new Date(input.value).toDateString();
+
+  nextTick(() => {
+    const blocks = document.querySelectorAll(".msg-block");
+
+    for (const block of blocks) {
+      const time = block.getAttribute("data-time");
+      if (!time) continue;
+
+      const same = new Date(time).toDateString() === picked;
+      if (same) {
+        block.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+    }
+  });
 }
 
 
@@ -265,13 +304,43 @@ onUnmounted(() => {
       <main class="left-col">
         <div class="chat-wrapper">
           <div class="messages" role="log" aria-live="polite">
-            <div v-for="(m, i) in messages" :key="i" class="message" :class="{ mine: m.senderName === senderName }">
-              <div class="meta">
-                <span class="sender">{{ m.senderName ?? 'Anonymous' }}</span>
-                <span class="time">[{{ formatTime(m.time) }}]</span>
+            <div
+                v-for="(m, i) in messages"
+                :key="i"
+                class="msg-block"
+                :data-time="m.time"
+            >
+              <div v-if="shouldShowDate(i)" class="date-separator">
+                {{ formatDate(messages[i].time) }}
               </div>
-              <div class="text">{{ m.content }}</div>
+              <div
+                  class="message"
+                  :class="{ mine: m.senderName === senderName }"
+              >
+                <div class="bubble">
+                  <div class="meta">
+                    <span class="sender">{{ m.senderName }}</span>
+
+                    <div class="avatar-wrapper">
+                      <img
+                          class="avatar"
+                          :src="`http://localhost:8080/UsersAvatar/${m.senderName.replaceAll(' ', '')}.png`"
+                          @error="handleAvatarError($event)"
+                      />
+                      <div class="fallback">?</div>
+                    </div>
+                  </div>
+
+                  <div class="text">{{ m.content }}</div>
+                  <div class="time-after">
+                    {{ formatOnlyTime(m.time) }}
+                  </div>
+
+                </div>
+              </div>
             </div>
+
+
           </div>
 
           <div class="composer">
@@ -288,13 +357,32 @@ onUnmounted(() => {
 
       <aside class="right-col">
         <div class="panel">
-          <h3 class="panel-title">Team status</h3>
+          <div class="date-switcher">
+            <h3 class="panel-title">Jump to date</h3>
+
+            <input
+                type="date"
+                class="date-picker"
+                @change="scrollToPickedDate($event)"
+            />
+          </div>
 
           <div v-if="userStatuses.length === 0" class="empty">No data yet</div>
 
           <div v-for="u in userStatuses" :key="u.fullName" class="status-row">
             <span class="dot" :class="u.status === 'Online' ? 'green' : 'red'"></span>
-            <span class="name">{{ u.fullName }}</span>
+            <div class="user-info">
+              <div class="avatar-wrapper small">
+                <img
+                    class="avatar small"
+                    :src="`http://localhost:8080/UsersAvatar/${u.fullName.replaceAll(' ', '')}.png`"
+                    @error="handleAvatarError($event)"
+                />
+                <div class="fallback small">?</div>
+              </div>
+
+              <span class="name">{{ u.fullName }}</span>
+            </div>
             <span class="badge" :class="u.status === 'Online' ? 'online' : 'offline'">
         {{ u.status }}
       </span>
@@ -307,7 +395,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-html, body, #app {
+html, body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -333,8 +421,6 @@ html, body, #app {
   height: auto;
 }
 
-
-
 .left-col {
   display: flex;
   flex-direction: column;
@@ -352,7 +438,6 @@ html, body, #app {
   overflow: hidden;
 }
 
-
 .messages {
   flex: 1;
   overflow-y: auto;
@@ -363,38 +448,89 @@ html, body, #app {
 }
 
 .message {
-  max-width: 60%;
-  align-self: flex-start;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 10px 14px;
-  color: #f4f0ff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  word-wrap: break-word;
+  align-self: flex-start !important;
+  max-width: 70%;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  position: relative;
 }
 
-.message .meta {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
+.bubble {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.message.mine .bubble {
+  background: linear-gradient(
+      135deg,
+      rgba(80, 90, 180, 0.35),
+      rgba(120, 140, 220, 0.20)
+  );
+  border: 1px solid rgba(140, 160, 255, 0.55);
+  box-shadow: 0 4px 12px rgba(60, 90, 255, 0.25);
+}
+
+.meta {
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 4px;
 }
 
-.message .sender {
+.sender {
   font-weight: 700;
-  color: #a6b3ff;
+  color: #e2ddff;
+  font-size: 13px;
 }
 
-.message .text {
-  white-space: pre-wrap;
+.text {
   font-size: 14px;
-  line-height: 1.4;
+  color: #f4f0ff;
+  white-space: pre-wrap;
+  text-align: left !important;
 }
 
-.message .time {
-  color: rgba(255,255,255,0.65);
-  font-size: 12px;
+.time-after {
+  font-size: 9px;
+  color: rgba(240, 240, 255, 0.65);
+  margin-top: 4px;
+  text-align: right;
+  line-height: 1;
+  padding-right: 2px;
 }
+
+.avatar-wrapper {
+  width: 26px;
+  height: 26px;
+  position: relative;
+}
+
+.avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255,255,255,0.25);
+}
+
+.fallback {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #ddd;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
 .composer {
   flex: 0 0 auto;
   display:flex;
@@ -404,21 +540,22 @@ html, body, #app {
   background: linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.12));
 }
 
-.message.mine {
-  align-self: flex-end;
-  border-color: rgba(100, 160, 255, 0.6);
-  background: linear-gradient(135deg, rgba(40, 70, 180, 0.35), rgba(90, 120, 255, 0.2));
-  box-shadow: 0 4px 12px rgba(50, 90, 255, 0.25);
-}
-
 .right-col .panel {
   height: 100%;
-  min-height: 0;
   overflow: auto;
   border-radius: 12px;
-  padding: 12px;
-  background: #fff;
-  border: 1.2px solid rgba(255,255,255,0.85);
+  padding: 16px;
+
+  background: linear-gradient(
+      135deg,
+      rgba(40, 20, 70, 0.85),
+      rgba(20, 10, 45, 0.9)
+  );
+
+  border: 1px solid rgba(180, 150, 255, 0.25);
+  box-shadow: 0 0 18px rgba(100, 60, 200, 0.18);
+
+  color: #eee;
 }
 
 .btn-back {
@@ -438,23 +575,9 @@ html, body, #app {
   filter: brightness(1.05);
   box-shadow: 0 12px 26px rgba(255,60,60,0.26);
 }
-.btn-back:active { transform: translateY(0); }
-.btn-back:disabled {
-  background: linear-gradient(135deg, #ffb6b6 0%, #ff9a9a 100%);
-  cursor: not-allowed;
-  opacity: 0.75;
-}
 
 .messages::-webkit-scrollbar { width: 10px; }
 .messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.25); border-radius: 8px; }
-
-@media (max-width: 900px) {
-  .content-grid { grid-template-columns: 1fr; }
-  .right-col .panel { min-height: 160px; }
-  .chat-wrapper { min-height: 360px; }
-}
-
-.panel-title { margin: 0 0 8px; font-weight: 800; }
 
 .status-row {
   display: grid;
@@ -465,23 +588,199 @@ html, body, #app {
   border-bottom: 1px dashed rgba(0,0,0,0.06);
 }
 
-.status-row:last-child { border-bottom: none; }
-
 .dot {
   width: 10px; height: 10px; border-radius: 50%;
   box-shadow: 0 0 0 2px rgba(0,0,0,0.06) inset;
 }
-.dot.green { background: #22c55e; }  /* Online */
-.dot.red   { background: #ef4444; }  /* Offline */
-
-.name { font-weight: 600; }
+.dot.green { background: #22c55e; }
+.dot.red   { background: #ef4444; }
 
 .badge {
   font-size: 12px; padding: 4px 8px; border-radius: 999px;
-  border: 1px solid transparent; user-select: none;
 }
-.badge.online  { background: rgba(34,197,94,0.12);  color: #166534; border-color: rgba(34,197,94,0.25); }
-.badge.offline { background: rgba(239,68,68,0.12);  color: #7f1d1d; border-color: rgba(239,68,68,0.25); }
+
+@media (max-width: 900px) {
+  .content-grid { grid-template-columns: 1fr; }
+  .right-col .panel { min-height: 160px; }
+  .chat-wrapper { min-height: 360px; }
+}
+
+.panel-title {
+  margin: 0 0 12px;
+  font-weight: 800;
+  font-size: 18px;
+  color: #d9ccff;
+  text-shadow: 0 0 6px rgba(200, 160, 255, 0.4);
+}
+
+.status-row {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 6px;
+  border-radius: 10px;
+
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+
+  transition: 0.18s ease;
+}
+
+.status-row:not(:last-child) {
+  margin-bottom: 8px;
+}
+
+.status-row:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.18);
+  transform: translateX(4px);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot.green {
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
+}
+
+.dot.red {
+  background: #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #efe7ff;
+}
+
+.badge {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid currentColor;
+  font-weight: 600;
+}
+
+.badge.online {
+  color: #22c55e;
+  background: rgba(34,197,94,0.12);
+}
+
+.badge.offline {
+  color: #ef4444;
+  background: rgba(239,68,68,0.12);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar-wrapper.small {
+  width: 22px;
+  height: 22px;
+  position: relative;
+}
+
+.avatar.small {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255,255,255,0.25);
+}
+
+.fallback.small {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #ddd;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.date-separator {
+  text-align: center;
+  color: rgba(255,255,255,0.55);
+  font-size: 12px;
+  margin: 12px 0;
+  padding: 4px 0;
+  letter-spacing: 0.5px;
+
+  text-shadow: 0 0 8px rgba(200,160,255,0.25);
+}
+
+.msg-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: auto;
+  max-width: 100%;
+}
+
+.date-separator {
+  align-self: center;
+  max-width: 100%;
+}
+
+.date-switcher {
+  margin-bottom: 20px;
+  padding: 12px;
+  border-radius: 12px;
+
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 0 8px rgba(100,60,200,0.15);
+}
+
+.date-item:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.18);
+  transform: translateX(4px);
+}
+
+.date-picker {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 8px;
+
+  background: rgba(255,255,255,0.08);
+  color: #f4eaff;
+
+  border: 1px solid rgba(255,255,255,0.15);
+  outline: none;
+
+  margin-bottom: 14px;
+
+  box-sizing: border-box;
+
+  transition: 0.15s;
+}
+
+.date-picker:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.25);
+}
+
+.date-picker::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.3);
+  cursor: pointer;
+}
 
 
 </style>
+
