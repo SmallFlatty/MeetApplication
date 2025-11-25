@@ -66,7 +66,6 @@ async function signIn() {
   registerInfo.value = null
   try {
 
-    // 1) Надсилаємо POST-запит на /login для створення сесії
     const loginRes = await fetch(`${UserAPI}/login`, {
       method: 'POST',
       credentials: 'include', // важливо для cookie-сесії
@@ -276,44 +275,54 @@ function go(to:any) {
             <span class="role" :class="user.role.toLowerCase()">{{ user.role }}</span>
           </div>
         </div>
-        <p v-else class="subtitle">Welcome, Guest</p>
       </div>
 
-      <div class="logo-bar">
+      <div v-if="user" class="logo-bar">
         <img :src="MainLogo" alt="RPS Meet logo" class="logo-img" />
       </div>
 
       <div class="header-actions">
-        <button v-if="user" class="btn ghost" @click="router.push({ name: 'report' })">Report Problem</button>
+
+        <button class="btn ghost" @click="router.push({ name: 'report' })">
+          Report Problem
+        </button>
+
         <button v-if="user" class="btn ghost" @click="goChat(user.name)">Chat</button>
         <button v-if="user" class="btn ghost" @click="goProfile(user.name)">Profile</button>
         <button v-if="user" class="btn danger" @click="logout">Logout</button>
+
         <button v-if="!user && !showLogin" class="btn" @click="showLogin = true; showRegistration = false">Sign In</button>
         <button v-if="!user && !showRegistration" class="btn" @click="showRegistration = true; showLogin = false">Register</button>
+
       </div>
     </header>
 
+    <div v-if="!user" class="hero-logo">
+      <img :src="MainLogo" alt="RPS Meet Logo" class="hero-logo-img" />
+    </div>
+
+    <!-- login-->
     <div v-if="!user && showLogin" class="login">
       <h2 class="login-title">Sign In</h2>
       <input v-model="email" placeholder="Email" autocomplete="email" />
       <input v-model="password" type="password" placeholder="Password" autocomplete="current-password" />
-      <button class="btn" @click="signIn" :disabled="!email || !password">
-        Sign In
-      </button>
+      <button class="btn" @click="signIn" :disabled="!email || !password">Sign In</button>
 
       <p v-if="loginError" class="error">{{ loginError }}</p>
       <p v-if="registerInfo" class="error">{{ registerInfo }}</p>
     </div>
 
+    <!--registration -->
     <div v-if="!user && showRegistration" class="registration">
       <h2 class="reg-title">Create account</h2>
       <input v-model="fullName" placeholder="Full name" autocomplete="username" />
       <input v-model="email" placeholder="Email" autocomplete="email" />
       <input v-model="password" type="password" placeholder="Password" autocomplete="current-password" />
+
       <label for="role">Select role:</label>
       <select v-model="selectedRole" id="role" class="input-role">
         <option disabled value="">-- choose one --</option>
-        <option v-for="role in roles" :key="role" :value="role">{{role}}</option>
+        <option v-for="role in roles" :key="role" :value="role">{{ role }}</option>
       </select>
 
       <div class="reg-buttons">
@@ -331,9 +340,9 @@ function go(to:any) {
         <div class="cta">Open</div>
       </article>
     </section>
-
   </div>
 </template>
+
 
 <style>
 :root {
@@ -372,16 +381,7 @@ function go(to:any) {
   gap:16px;
   min-height: 96px;
 }
-.title {
-  margin: 0;
-  font-size: 28px;
-  letter-spacing: 0.2px;
-}
 .title-wrap{ display:flex; align-items:center; gap:12px; }
-.subtitle {
-  margin: 0;
-  color: var(--muted);
-}
 
 .role {
   padding: 2px 10px;
@@ -538,11 +538,6 @@ function go(to:any) {
   box-shadow: 0 0 0 3px var(--ring);
 }
 
-.role-label {
-  color: #cfc8ea;
-  font-weight: 500;
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -622,9 +617,6 @@ function go(to:any) {
   .login {
     grid-template-columns: 1fr;
   }
-  .btn-primary {
-    width: 100%;
-  }
 }
 body, html, .page {
   background-color: #0e0b18 !important;
@@ -649,7 +641,10 @@ input:-webkit-autofill:focus {
   font: inherit;
   transition: none !important;
 }
-
+input {
+  box-sizing: border-box;
+  outline: none;
+}
 .logo-bar{
   position:absolute;
   left:50%; top:50%;
@@ -668,5 +663,88 @@ input:-webkit-autofill:focus {
 
 .page { position: relative; }
 
+.hero-logo {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
 
+.hero-logo-img {
+  width: 230px;
+  filter: drop-shadow(0 18px 45px rgba(160,100,255,0.45));
+  animation: floatLogo 4s ease-in-out infinite;
+}
+
+@keyframes floatLogo {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.page input,
+.page select {
+  width: 100% !important;
+  box-sizing: border-box !important;
+
+  height: 48px !important;
+  padding: 12px 16px !important;
+
+  border-radius: 14px;
+  background: rgba(29, 23, 56, 0.85);
+  border: 1px solid rgba(140, 120, 200, 0.3);
+  color: var(--text);
+
+  font-size: 15px;
+  backdrop-filter: blur(6px);
+  transition: all .25s ease;
+}
+
+
+.page input::placeholder {
+  color: #cfc8ea88 !important;
+}
+
+.page input:focus,
+.page select:focus {
+  border-color: var(--violet-1);
+  box-shadow: 0 0 0 3px rgba(160, 100, 255, 0.25);
+  background: rgba(35, 27, 63, 0.95);
+}
+
+.login, .registration {
+  width: 380px;
+  margin: 40px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  background: rgba(36, 29, 62, 0.6);
+  border-radius: 22px;
+  padding: 35px 32px;
+  border: 1px solid rgba(160, 100, 255, 0.25);
+  backdrop-filter: blur(12px);
+
+  animation: fadeUp .35s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.login-title, .reg-title {
+  font-size: 1.6rem;
+  margin-bottom: 18px;
+  font-weight: 800;
+  color: var(--violet-1);
+  text-shadow: 0 0 12px rgba(160,100,255,0.35);
+}
+
+.reg-buttons .btn,
+.login .btn {
+  width: 100%;
+  height: 44px;
+  border-radius: 14px;
+  font-size: 16px;
+}
 </style>
