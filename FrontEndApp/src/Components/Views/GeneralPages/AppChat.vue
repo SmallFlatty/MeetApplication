@@ -4,8 +4,7 @@ import { useRouter, useRoute } from 'vue-router';
 import SockJS from 'sockjs-client';
 import { Client, Frame } from '@stomp/stompjs';
 import CryptoJS from 'crypto-js'
-
-
+import '@/Assets/global.css'
 
 const SECRET_KEY = 'MASHONOCKA'
 
@@ -368,7 +367,7 @@ onUnmounted(() => {
           </div>
 
           <div v-if="userStatuses.length === 0" class="empty">No data yet</div>
-
+        <div class="users-scroll">
           <div v-for="u in userStatuses" :key="u.fullName" class="status-row">
             <span class="dot" :class="u.status === 'Online' ? 'green' : 'red'"></span>
             <div class="user-info">
@@ -388,6 +387,7 @@ onUnmounted(() => {
       </span>
           </div>
         </div>
+      </div>
       </aside>
 
     </div>
@@ -395,12 +395,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
 .app-chat-page {
   display: flex;
@@ -781,6 +775,36 @@ html, body {
   cursor: pointer;
 }
 
+.right-col {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
 
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.date-switcher {
+  flex: 0 0 auto;
+  margin-bottom: 12px;
+}
+
+.users-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.users-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.users-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+}
 </style>
-
