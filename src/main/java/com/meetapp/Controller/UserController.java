@@ -25,6 +25,12 @@ public class UserController  {
     }
     @PostMapping("/create-user")
     public ResponseEntity<?> createUser(@RequestParam String email, @RequestParam String password, @RequestParam String fullName, @RequestParam String role){
+
+        if (!email.matches("^[A-Za-z0-9._%+-]+@gmail\\.com$")) {
+            System.out.println("Invalid email");
+            return ResponseEntity.badRequest().build();
+        }
+
         if (fullName.isEmpty() || password.isEmpty() || email.isEmpty() || role.isEmpty()) {
 
             return ResponseEntity.badRequest().body("Missing required fields");
@@ -98,6 +104,11 @@ public class UserController  {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password, HttpSession session) {
+        if (!email.matches("^[A-Za-z0-9._%+-]+@gmail\\.com$")) {
+            return ResponseEntity.badRequest().build();
+        }
+
+
         UserEntity user = userService.getUser(email,password);
 
         if (user == null) {

@@ -23,6 +23,7 @@ async function registerUser() {
 
   loading.value = true
   message.value = ''
+
   try {
     const params = new URLSearchParams({
       email: email.value,
@@ -31,30 +32,41 @@ async function registerUser() {
       role: role.value
     })
 
-    const res = await fetch(`http://localhost:8080/api/user/create-user?${params.toString()}`, {
-      method: 'POST'
-    })
+    const res = await fetch(
+        `http://localhost:8080/api/user/create-user?${params.toString()}`,
+        { method: 'POST' }
+    )
+
+    if (!res.ok) {
+      const errorText = await res.text()
+      message.value = '❌ Please enter a valid email: ' + errorText
+      return
+    }
 
     const statusRes = await fetch(
         `http://localhost:8080/api/status/create-status?fullName=${encodeURIComponent(fullName.value)}`,
         { method: 'POST' }
     )
-    if (res.ok && statusRes.ok) {
-      message.value = '✅ Користувача створено успішно'
-      email.value = ''
-      password.value = ''
-      fullName.value = ''
-      role.value = 'USER'
-    } else {
-      const text = await res.text()
-      message.value = '❌ ' + text
+
+    if (!statusRes.ok) {
+      const errText = await statusRes.text()
+      message.value = '⚠️ User created, but failed to create status: ' + errText
+      return
     }
+
+    message.value = '✅ Користувача створено успішно'
+    email.value = ''
+    password.value = ''
+    fullName.value = ''
+    role.value = 'USER'
+
   } catch (err) {
-    message.value = '❌ Помилка з’єднання з сервером'
+    message.value = '❌ Error to connect'
   } finally {
     loading.value = false
   }
 }
+
 </script>
 
 <template>

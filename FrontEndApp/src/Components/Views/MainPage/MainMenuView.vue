@@ -68,7 +68,7 @@ async function signIn() {
 
     const loginRes = await fetch(`${UserAPI}/login`, {
       method: 'POST',
-      credentials: 'include', // важливо для cookie-сесії
+      credentials: 'include',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         email: email.value,
@@ -77,7 +77,7 @@ async function signIn() {
     })
 
     if (!loginRes.ok) {
-      loginError.value = 'Invalid name or password'
+      loginError.value = 'Invalid email or password'
       return
     }
 
